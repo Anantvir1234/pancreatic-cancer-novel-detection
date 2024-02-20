@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict(data, model_path="model_xgb.sav"):
+def predict(data, model_path="model_LogR.sav"):
     with open(model_path, 'rb') as model_file:
         clf = pickle.load(model_file)
         predictions = clf.predict(data)
