@@ -32,7 +32,7 @@ if uploaded_file is not None:
     if all(col in df.columns for col in required_columns):
         st.subheader("Pancreatic Cancer Detection Results:")
 
-      if st.button("Process Uploaded File"):
+    if st.button("Process Uploaded File"):
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
