@@ -1,11 +1,16 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import xgboost as xgb
 
 def predict(data, model_path="model_xgb.sav"):
     with open(model_path, 'rb') as model_file:
         clf = pickle.load(model_file)
-    return clf.predict(data)
+        predictions = clf.predict(data)
+    return predictions
+
+# Install xgboost
+# !pip install xgboost
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -48,4 +53,3 @@ if uploaded_file is not None:
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
-
