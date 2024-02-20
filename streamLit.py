@@ -1,5 +1,21 @@
 import streamlit as st
 import pandas as pd
+import pickle
+
+def predict_pancreatic_cancer(data, model_path="model_LogR.sav"):
+    # Load the pre-trained model using pickle
+    with open(model_path, 'rb') as model_file:
+        clf = pickle.load(model_file)
+    
+    # Example: You can add your custom logic here to preprocess data before making predictions
+    # For simplicity, assuming the model expects the same features as specified column names
+    features = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+    input_data = data[features]
+    
+    # Make predictions
+    predictions = clf.predict(input_data)
+    
+    return predictions
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -9,7 +25,6 @@ st.markdown("Detect pancreatic cancer through an uploaded CSV file.")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
@@ -26,9 +41,20 @@ if uploaded_file is not None:
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
-            # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
-            result = df[required_columns].mean()  # Just an example, replace with your actual detection logic
-            st.write("Mean values of selected columns:", result)
+            # Get predictions using the pre-trained model
+            predictions = predict_pancreatic_cancer(df)
+            
+            st.subheader("Final Results:")
+            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
+            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
+            ground_truth_labels = df["ground_truth"]
+
+            # Evaluate accuracy
+            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
+
+            # Display accuracy
+            st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
