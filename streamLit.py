@@ -39,22 +39,5 @@ if uploaded_file is not None:
             predictions = predict(df[required_columns])
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-            # In the predict_pancreatic_cancer function:
-
-           def predict_pancreatic_cancer(data, model_path="model_xgb.sav"):
-           # Load the pre-trained model using pickle
-           with open(model_path, 'rb') as model_file:
-           clf = pickle.load(model_file)
-           features = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-           input_data = data[features]
-
-           # Make probability predictions
-           prediction_probs = clf.predict_proba(input_data)
-
-          return prediction_probs
-          # In the processing section:
-          prediction_probs = predict_pancreatic_cancer(df)
-          st.subheader("Model Prediction Probabilities:")
-          st.write(prediction_probs[:, 1])  # Assuming 1 is the cancer class, adjust if needed
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
