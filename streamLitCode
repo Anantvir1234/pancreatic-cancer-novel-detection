@@ -21,11 +21,11 @@ if uploaded_file is not None:
 
     # Replace specific column and row name with actual column and row name of CSV
 
-    if 'SpecificColumnName' in df.columns and 'SpecificRowName' in df.index:
+    if 'SpecificColumnName' in df.columns:
         st.subheader("Pancreatic Cancer Detection Results:")
         # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
-        result = df.loc['SpecificRowName', 'SpecificColumnName']
+        result = df.loc['SpecificColumnName']
         st.write(f"Result: {result}")
 
     else:
-        st.warning("The uploaded CSV file does not have the expected column or row names for pancreatic cancer detection.")
+        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection.")
