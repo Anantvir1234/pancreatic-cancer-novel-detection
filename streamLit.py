@@ -37,5 +37,3 @@ if uploaded_file is not None:
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
-    else:
-        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
