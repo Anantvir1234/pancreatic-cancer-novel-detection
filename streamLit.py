@@ -11,7 +11,7 @@ def predict(data, model_path="model_xgb.sav"):
         return predictions
     except Exception as e:
         return f"Error: {e}"
-     if data["plasma_CA19_9"].mean() > 50:
+    if data["plasma_CA19_9"].mean() > 50:
         return "DETECTED"
     else:
         return "NOT DETECTED"
