@@ -36,11 +36,7 @@ if uploaded_file is not None:
         if st.button("Process Uploaded File"):
             # Get predictions using the pre-trained model
             predictions = predict(df[required_columns])
-            
-            st.subheader("Individual Results:")
-            for i, prediction in enumerate(predictions):
-                result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
-                st.write(f"Row {i + 1}: {result}")
+            st.subheader("Final results:")
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
