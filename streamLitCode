@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -19,13 +18,17 @@ if uploaded_file is not None:
     st.subheader("Preview of the uploaded data:")
     st.write(df.head())
 
-    # Replace specific column and row name with actual column and row name of CSV
+    # Check for specific column names relevant to pancreatic cancer detection
+    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
 
-    if 'SpecificColumnName' in df.columns:
+    if all(col in df.columns for col in required_columns):
         st.subheader("Pancreatic Cancer Detection Results:")
-        # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
-        result = df.loc['SpecificColumnName']
-        st.write(f"Result: {result}")
+
+        # Button for processing the uploaded file
+        if st.button("Process Uploaded File"):
+            # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
+            result = df[required_columns].mean()  # Just an example, replace with your actual detection logic
+            st.write("Mean values of selected columns:", result)
 
     else:
-        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection.")
+        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
