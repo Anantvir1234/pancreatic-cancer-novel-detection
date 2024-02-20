@@ -32,9 +32,9 @@ if uploaded_file is not None:
     if all(col in df.columns for col in required_columns):
         st.subheader("Pancreatic Cancer Detection Results:")
 
-  if st.button("Process Uploaded File"):
-            st.subheader("Final Results:")
-            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+      if st.button("Process Uploaded File"):
+        st.subheader("Final Results:")
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
