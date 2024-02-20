@@ -25,10 +25,6 @@ if uploaded_file is not None:
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-    st.write(f"Columns in DataFrame: {df.columns}")
-    st.write(f"Required Columns: {required_columns}")
-    predictions = predict_pancreatic_cancer(df)
-    st.write(f"Predictions: {predictions}")
     if all(col in df.columns for col in required_columns):
         st.subheader("Pancreatic Cancer Detection Results:")
 
