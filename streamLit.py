@@ -1,21 +1,16 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import joblib
 
-def predict_pancreatic_cancer(data, model_path="model_xgb.sav"):
-    # Load the pre-trained model
-    clf = joblib.load(model_path)
-    
-    # Example: You can add your custom logic here to preprocess data before making predictions
-    # For simplicity, assuming the model expects the same features as required_columns
-    features = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-    input_data = data[features]
-    
-    # Make predictions
-    predictions = clf.predict(input_data)
-    
-    return predictions
+
+def predict(data, model_path="model_xgb.sav"):
+    try:
+        with open(model_path, 'rb') as model_file:
+            clf = pickle.load(model_file)
+        predictions = clf.predict(data)
+        return predictions
+    except Exception as e:
+        return f"Error: {e}"
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -25,7 +20,6 @@ st.markdown("Detect pancreatic cancer through an uploaded CSV file.")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
@@ -34,34 +28,27 @@ if uploaded_file is not None:
     st.subheader("Preview of the uploaded data:")
     st.write(df.head())
 
-    # Print column names for debugging
-    st.subheader("Column Names:")
-    st.write(df.columns.tolist())
-
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-
     if all(col in df.columns for col in required_columns):
         st.subheader("Pancreatic Cancer Detection Results:")
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
             # Get predictions using the pre-trained model
-            predictions = predict_pancreatic_cancer(df)
+            predictions = predict(df[required_columns])
             
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
             # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
-            ground_truth_labels = df.get("ground_truth")
+            ground_truth_labels = df["ground_truth"]
 
-            if ground_truth_labels is not None:
-                # Evaluate accuracy
-                accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
-                # Display accuracy
-                st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
-            else:
-                st.warning("The column 'ground_truth' is not present in the DataFrame. Please check the file structure.")
+            # Evaluate accuracy
+            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
+
+            # Display accuracy
+            st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
+
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
-
