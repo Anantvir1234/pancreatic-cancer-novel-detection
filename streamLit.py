@@ -34,13 +34,6 @@ if uploaded_file is not None:
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
-            # Rearrange the columns and calculate the mean of 'plasma_CA19_9'
-            processed_data = df[required_columns]
-            processed_data['mean_CA19_9'] = processed_data['plasma_CA19_9'].mean()
-            processed_data = processed_data[['REG1A', 'creatinine', 'TFF1', 'LYVE1', 'plasma_CA19_9', 'REG1B', 'age', 'mean_CA19_9']]
-
-            # Get predicted probabilities using the pre-trained model
-            probabilities = predict_probabilities(processed_data)
             
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
