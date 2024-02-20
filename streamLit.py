@@ -6,8 +6,7 @@ import xgboost as xgb
 def predict(data, model_path="model_xgb.sav"):
     with open(model_path, 'rb') as model_file:
         clf = pickle.load(model_file)
-        predictions = clf.predict(data)
-    return predictions
+    return clf.predict(data)
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -50,4 +49,3 @@ if uploaded_file is not None:
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
-
