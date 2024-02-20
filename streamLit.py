@@ -2,19 +2,11 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-def predict_pancreatic_cancer(data, model_path="model_xgb.sav"):
-    # Load the pre-trained model
-    clf = joblib.load(model_path)
-    
-    # Example: You can add your custom logic here to preprocess data before making predictions
-    # For simplicity, assuming the model expects the same features as specified column names
-    features = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-    input_data = data[features]
-    
-    # Make predictions
-    predictions = clf.predict(input_data)
-    
-    return predictions
+def predict(data):
+    clf = joblib.load("model_xgb.sav")
+    return clf.predict(data)
+    with open(model_path, 'rb') as model_file:
+        clf = pickle.load(model_file)
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -24,7 +16,6 @@ st.markdown("Detect pancreatic cancer through an uploaded CSV file.")
 
 # Upload CSV file
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
@@ -42,7 +33,7 @@ if uploaded_file is not None:
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
             # Get predictions using the pre-trained model
-            predictions = predict_pancreatic_cancer(df)
+            predictions = predict(df[required_columns])
             
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
