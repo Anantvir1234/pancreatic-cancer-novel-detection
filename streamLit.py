@@ -43,11 +43,6 @@ if uploaded_file is not None:
                 result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
                 st.write(f"Row {i + 1}: {result}")
 
-            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
-            ground_truth_labels = df["ground_truth"]
-
-            # Evaluate accuracy
-            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
 
             # Display accuracy
             st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
