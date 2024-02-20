@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import xgboost as xgb
 
 def predict_probabilities(data, model_path="model_xgb.sav"):
     try:
