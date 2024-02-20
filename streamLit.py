@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict_pancreatic_cancer(data, model_path="model_LogR.sav"):
+def predict_pancreatic_cancer(data, model_path="model_xgb.sav"):
     # Load the pre-trained model using pickle
     with open(model_path, 'rb') as model_file:
         clf = pickle.load(model_file)
