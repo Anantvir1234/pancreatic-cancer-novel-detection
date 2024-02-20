@@ -42,13 +42,20 @@ if uploaded_file is not None:
                 result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
                 st.write(f"Row {i + 1}: {result}")
 
-            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
-            ground_truth_labels = df["ground_truth"]
+            ground_truth_column = "ground_truth"
+
+            # Assuming the ground truth labels are present in the specified column
+            if ground_truth_column in df.columns:
+                ground_truth_labels = df[ground_truth_column]
 
             # Evaluate accuracy
             accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
 
             # Display accuracy
             st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
-    else:
-        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+        else:
+            st.warning(f"The ground truth column '{ground_truth_column}' is not present in the uploaded CSV file.")
+                    # Display accuracy
+                    st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
+            else:
+                st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
