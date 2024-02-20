@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import xgboost as xgb
+import xgboost
 
 def predict(data, model_path="model_xgb.sav"):
     with open(model_path, 'rb') as model_file:
