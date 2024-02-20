@@ -38,6 +38,17 @@ if uploaded_file is not None:
             # Get predictions using the pre-trained model
             predictions = predict(df[required_columns])
             st.subheader("Final Results:")
-            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+            for i, prediction in enumerate(predictions):
+                result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
+                st.write(f"Row {i + 1}: {result}")
+
+            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
+            ground_truth_labels = df["ground_truth"]
+
+            # Evaluate accuracy
+            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
+
+            # Display accuracy
+            st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
