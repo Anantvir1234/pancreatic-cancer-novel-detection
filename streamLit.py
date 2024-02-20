@@ -35,18 +35,18 @@ if uploaded_file is not None:
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
-    # Get predictions using the pre-trained model
-            predictions = predict_pancreatic_cancer(df)
-        
+            # Get predictions using the pre-trained model
+            predictions = predict(df[required_columns])
+            
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-        
+
             # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
             ground_truth_labels = df["ground_truth"]
-        
+
             # Evaluate accuracy
             accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
-        
+
             # Display accuracy
             st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
 
