@@ -3,14 +3,6 @@ import pandas as pd
 import pickle
 import xgboost as xgb
 
-# Check if xgboost is installed
-try:
-    import xgboost
-except ImportError:
-    st.warning("xgboost not found. Please install it using the following command before running the app:")
-    st.code("pip install xgboost", language="python")
-    st.stop()
-
 def predict(data, model_path="model_xgb.sav"):
     with open(model_path, 'rb') as model_file:
         clf = pickle.load(model_file)
