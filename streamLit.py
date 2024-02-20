@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
-import joblib
+import pickle
 
 def predict(data, model_path="model_xgb.sav"):
-    clf = joblib.load(model_path)
+    with open(model_path, 'rb') as model_file:
+        clf = pickle.load(model_file)
     return clf.predict(data)
 
 # Title and description
@@ -47,4 +48,3 @@ if uploaded_file is not None:
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
-
