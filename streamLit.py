@@ -2,13 +2,12 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-
-def predict(data, model_path="model_xgb.sav"):
+def predict_probabilities(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-        predictions = clf.predict(data)
-        return predictions
+        probabilities = clf.predict_proba(data)[:, 1]  # Assuming the positive class is cancer
+        return probabilities
     except Exception as e:
         return f"Error: {e}"
 
@@ -35,22 +34,12 @@ if uploaded_file is not None:
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
-            # Get predictions using the pre-trained model
-            predictions = predict(df[required_columns])
+            # Get predicted probabilities using the pre-trained model
+            probabilities = predict_probabilities(df[required_columns])
             
-            st.subheader("Individual Results:")
-            for i, prediction in enumerate(predictions):
-                result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
-                st.write(f"Row {i + 1}: {result}")
-
-            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
-            ground_truth_labels = df["ground_truth"]
-
-            # Evaluate accuracy
-            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
-
-            # Display accuracy
-            st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
+            st.subheader("Probability of Cancer for Each Row:")
+            st.write(probabilities)
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+
