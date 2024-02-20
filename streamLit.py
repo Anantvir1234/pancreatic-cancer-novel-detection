@@ -29,15 +29,16 @@ if uploaded_file is not None:
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-    if all(col in df.columns for col in required_columns):
-        st.subheader("Pancreatic Cancer Detection Results:")
+if all(col in df.columns for col in required_columns):
+    st.subheader("Pancreatic Cancer Detection Results:")
 
-    if st.button("Process Uploaded File"):
-            # Apply the detect_pancreatic_cancer function to each row
-        df["Detection_Result"] = df.apply(detect_pancreatic_cancer, axis=1)
+if st.button("Process Uploaded File"):
+    # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
+    input_data = df[required_columns]
+    result = detect_pancreatic_cancer(input_data)
             
-        st.subheader("Final Results for Each Patient:")
-        st.write(df[["Patient_ID", "Detection_Result"]])  # Assuming there's a "Patient_ID" column in your CSV
+    st.subheader("Final Result:")
+    st.write(f"Pancreatic Cancer {result}")
 
-    else:
+else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
