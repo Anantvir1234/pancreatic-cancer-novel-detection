@@ -2,10 +2,15 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict(data, model_path="model_xgb.sav"):
-    with open(model_path, 'rb') as model_file:
-        clf = pickle.load(model_file)
+def predict(data):
+    clf = joblib.load("model_xgb.sav")
     return clf.predict(data)
+
+
+# Apply model to make predictions
+
+if st.button("Click here to Predict type of Disease"):
+    result = predict(input_df)
 
 # Title and description
 title = "Pancreatic Cancer Detection"
