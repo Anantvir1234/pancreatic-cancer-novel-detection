@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict_probabilities(data, model_path="model_xgb.sav"):
+
+def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-        probabilities = clf.predict_proba(data)[:, 1]  # Assuming the positive class is cancer
-        return probabilities
+        predictions = clf.predict(data)
+        return predictions
     except Exception as e:
         return f"Error: {e}"
 
@@ -34,16 +35,22 @@ if uploaded_file is not None:
 
         # Button for processing the uploaded file
         if st.button("Process Uploaded File"):
-            # Rearrange the columns and calculate the mean of 'plasma_CA19_9'
-            processed_data = df[required_columns]
-            processed_data['mean_CA19_9'] = processed_data['plasma_CA19_9'].mean()
-            processed_data = processed_data[['REG1A', 'creatinine', 'TFF1', 'LYVE1', 'plasma_CA19_9', 'REG1B', 'age', 'mean_CA19_9']]
-
-            # Get predicted probabilities using the pre-trained model
-            probabilities = predict_probabilities(processed_data)
+            # Get predictions using the pre-trained model
+            predictions = predict(df[required_columns])
             
-            st.subheader("Probability of Cancer for Each Row:")
-            st.write(probabilities)
+            st.subheader("Individual Results:")
+            for i, prediction in enumerate(predictions):
+                result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
+                st.write(f"Row {i + 1}: {result}")
+
+            # Assuming you have ground truth labels in a column named "ground_truth" in your DataFrame
+            ground_truth_labels = df["ground_truth"]
+
+            # Evaluate accuracy
+            accuracy = sum(predictions == ground_truth_labels) / len(ground_truth_labels)
+
+            # Display accuracy
+            st.subheader(f"Model Accuracy: {accuracy * 100:.2f}%")
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
