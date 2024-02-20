@@ -8,8 +8,8 @@ try:
     import xgboost
 except ImportError:
     st.warning("xgboost not found. Installing...")
-    st.code("!pip install xgboost", language="python")
-    !pip install xgboost
+    st.code("pip install xgboost", language="python")
+    pip install xgboost
     st.success("xgboost installed successfully. Please rerun the application.")
 
 def predict(data, model_path="model_xgb.sav"):
