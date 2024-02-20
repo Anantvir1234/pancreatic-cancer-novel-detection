@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -29,16 +30,13 @@ if uploaded_file is not None:
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-if all(col in df.columns for col in required_columns):
-    st.subheader("Pancreatic Cancer Detection Results:")
+    if all(col in df.columns for col in required_columns):
+        st.subheader("Pancreatic Cancer Detection Results:")
 
-if st.button("Process Uploaded File"):
-    # Example: You can add your custom logic here to detect pancreatic cancer based on specific features in the dataset.
-    input_data = df[required_columns]
-    result = detect_pancreatic_cancer(input_data)
-            
-    st.subheader("Final Result:")
-    st.write(f"Pancreatic Cancer {result}")
+        # Button for processing the uploaded file
+        if st.button("Process Uploaded File"):
+            st.subheader("Individual Results:")
 
-else:
+    else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+
