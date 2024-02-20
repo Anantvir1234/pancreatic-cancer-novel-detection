@@ -42,6 +42,5 @@ if uploaded_file is not None:
             for i, prediction in enumerate(predictions):
                 result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
                 st.write(f"Row {i + 1}: {result}"
-
-    else:
-        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+              else:
+                st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
