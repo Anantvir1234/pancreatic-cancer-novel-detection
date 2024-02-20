@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -41,7 +40,8 @@ if uploaded_file is not None:
             st.subheader("Individual Results:")
             for i, prediction in enumerate(predictions):
                 result = "Pancreatic Cancer Detected" if prediction else "Not Detected"
-                st.write(f"Row {i + 1}: {result}"
+                st.write(f"Row {i + 1}: {result}")
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+
