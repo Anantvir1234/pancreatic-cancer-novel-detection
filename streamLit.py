@@ -33,9 +33,11 @@ if uploaded_file is not None:
         st.subheader("Pancreatic Cancer Detection Results:")
 
     if st.button("Process Uploaded File"):
+            # Apply the detect_pancreatic_cancer function to each row
+        df["Detection_Result"] = df.apply(detect_pancreatic_cancer, axis=1)
             
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+        st.subheader("Final Results for Each Patient:")
+        st.write(df[["Patient_ID", "Detection_Result"]])  # Assuming there's a "Patient_ID" column in your CSV
 
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
