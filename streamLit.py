@@ -2,10 +2,15 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+
 def predict(data, model_path="model_xgb.sav"):
-    with open(model_path, 'rb') as model_file:
-        clf = pickle.load(model_file)
-    return clf.predict(data)
+    try:
+        with open(model_path, 'rb') as model_file:
+            clf = pickle.load(model_file)
+        predictions = clf.predict(data)
+        return predictions
+    except Exception as e:
+        return f"Error: {e}"
 
 # Title and description
 title = "Pancreatic Cancer Detection"
