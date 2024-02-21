@@ -35,16 +35,12 @@ if session_state.active_tab == "Upload a .CSV":
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File", disabled="error" in st.session_state):
-                predictions = predict(df[required_columns])
-                st.subheader("Final Results:")
-                cancer_detected = any(predictions)
-                if not isinstance(cancer_detected, str):
-                    st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                    st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
-                    st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
-                else:
-                    st.error(cancer_detected)
+            if not isinstance(cancer_detected, str):
+                st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+                st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+                st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+            else:
+                st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -60,7 +56,6 @@ else:
         if sex not in [0, 1]:
             st.error("Gender should be either 0 or 1.")
             return None
-        age = st.sidebar.number_input('Age: ')
         ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
         creatinine = st.sidebar.number_input('Creatinine: ')
         LYVE1 = st.sidebar.number_input('LYVE1: ')
