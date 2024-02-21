@@ -65,7 +65,7 @@ else:
     if st.button("Process values"):
         predictions = predict(input_df)
         st.subheader("Final Results:")
-        cancer_detected = any(predictions)
+        cancer_detected = bool(predictions[0])
         st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
         st.checkbox("Cancer Detected", value=cancer_detected)
         st.checkbox("Cancer Not Detected", value=not cancer_detected)
@@ -75,4 +75,5 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
