@@ -15,7 +15,7 @@ def predict(data, model_path="model_xgb.sav"):
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
-st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw data")
+st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
 session_state = st.session_state
 if 'active_tab' not in session_state:
@@ -68,4 +68,4 @@ else:
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
-    session_state.active_tab = "Input raw data"
+    session_state.active_tab = "Input Raw Data"
