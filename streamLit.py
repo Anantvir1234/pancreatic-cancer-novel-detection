@@ -59,6 +59,13 @@ with input_tab:
         data = {'age':age, 'sex':sex, 'ca_19_19':ca_19_19, 'creatinine':creatinine, 'LYVE1':LYVE1, 'REG1B':REG1B, 'REG1A':REG1A, 'TFF1':TFF1,
                         }
         features = pd.DataFrame(data, index=[0])
+        
         return features
+        if st.button("Process values"):
+                # Get predictions using the pre-trained model
+                predictions = predict(features)
+                st.subheader("Final Results:")
+                st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+    
     input_df = user_input_features()
     st.write(input_df)
