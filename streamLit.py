@@ -39,8 +39,8 @@ if session_state.active_tab == "Upload a .CSV":
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                st.checkbox("Cancer Detected", value=cancer_detected)
-                st.checkbox("Cancer Not Detected", value=not cancer_detected)
+                st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+                st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -49,7 +49,10 @@ else:
     
     def user_input_features():
         age = st.sidebar.number_input('Age of persons: ')
-        sex = st.sidebar.selectbox('Gender of persons 0=Female, 1=Male: ', (0, 1))
+        sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1, format="%d")
+        if sex not in [0, 1]:
+            st.error("Gender should be either 0 or 1.")
+            return None
         ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
         creatinine = st.sidebar.number_input('Creatinine: ')
         LYVE1 = st.sidebar.number_input('LYVE1: ')
@@ -62,14 +65,15 @@ else:
         return features
     
     input_df = user_input_features()
-    if st.button("Process values"):
-        predictions = predict(input_df)
-        st.subheader("Final Results:")
-        cancer_detected = bool(predictions[0])
-        st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-        st.checkbox("Cancer Detected", value=cancer_detected)
-        st.checkbox("Cancer Not Detected", value=not cancer_detected)
-    st.write(input_df)
+    if input_df is not None:
+        if st.button("Process values"):
+            predictions = predict(input_df)
+            st.subheader("Final Results:")
+            cancer_detected = bool(predictions[0])
+            st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+            st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+            st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+        st.write(input_df)
 
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
