@@ -7,9 +7,10 @@ def predict(data, model_path="model_xgb.sav"):
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
             predictions = clf.predict(data)
-        return predictions
+            probabilities = clf.predict_proba(data)[:, 1]  # Probabilities of positive class (cancer detected)
+        return predictions, probabilities
     except Exception as e:
-        return f"Error: {e}"
+        return None, f"Error: {e}"
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -35,12 +36,16 @@ if session_state.active_tab == "Upload a .CSV":
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File"):
-                predictions = predict(df[required_columns])
-                st.subheader("Final Results:")
-                cancer_detected = any(predictions)
-                st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                st.checkbox("Cancer Detected", value=cancer_detected)
-                st.checkbox("Cancer Not Detected", value=not cancer_detected)
+                predictions, probabilities = predict(df[required_columns])
+                if predictions is not None:
+                    st.subheader("Final Results:")
+                    cancer_detected = any(predictions)
+                    st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+                    st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+                    st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+                    st.subheader("Accuracy:")
+                    accuracy = sum(predictions) / len(predictions)
+                    st.write(f"Accuracy: {accuracy * 100:.2f}%")
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -63,17 +68,22 @@ else:
     
     input_df = user_input_features()
     if st.button("Process values"):
-        predictions = predict(input_df)
-        st.subheader("Final Results:")
-        cancer_detected = bool(predictions[0])
-        st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-        st.checkbox("Cancer Detected", value=cancer_detected)
-        st.checkbox("Cancer Not Detected", value=not cancer_detected)
+        predictions, probabilities = predict(input_df)
+        if predictions is not None:
+            st.subheader("Final Results:")
+            cancer_detected = bool(predictions[0])
+            st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+            st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+            st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+            st.subheader("Accuracy:")
+            accuracy = probabilities[0] if cancer_detected else 1 - probabilities[0]
+            st.write(f"Accuracy: {accuracy * 100:.2f}%")
     st.write(input_df)
 
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
 
