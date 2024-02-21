@@ -19,7 +19,7 @@ st.markdown("Detect pancreatic cancer through an uploaded CSV file or input data
 
 upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"])
 
-# Sidebar only shows up on the input tab
+# Show input fields when on the "Input raw data" tab
 if input_tab:
     st.sidebar.header('Please Input Features Value')
 
@@ -38,11 +38,11 @@ if input_tab:
         features = pd.DataFrame(data, index=[0])
         return features
 
-# Show input fields when on the "Input raw data" tab
-if st.button("Process Manual Input"):
+    # Get predictions using the pre-trained model when user inputs data
     input_df = user_input_features()
-    # Get predictions using the pre-trained model
     predictions = predict(input_df)
+
+    # Display the input fields and prediction results
     st.subheader("Final Results:")
     st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
     st.write("Prediction Confidence:", predictions[0])  # Add confidence if available
