@@ -29,12 +29,17 @@ if session_state.active_tab == "Upload a .CSV":
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
-        st.subheader("Preview of the uploaded data:")
-        st.write(df.head())
 
-        # Check if the required columns are present in the uploaded CSV
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-        if set(required_columns).issubset(df.columns):
+        # Ensure required columns are present and handle the unnamed column
+        required_columns = ["unnamed", "sex", "REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+        if all(col in df.columns for col in required_columns):
+            # Rename the unnamed column if present
+            if 'Unnamed: 0' in df.columns:
+                df.rename(columns={'Unnamed: 0': 'unnamed'}, inplace=True)
+
+            st.subheader("Preview of the uploaded data:")
+            st.write(df.head())
+
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
@@ -57,7 +62,7 @@ else:
         if age <= 0:
             st.error("Age should be greater than 0.")
             return None
-        sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1)
+        sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1, format="%d")
         if sex not in [0, 1]:
             st.error("Gender should be either 0 or 1.")
             return None
@@ -67,7 +72,7 @@ else:
         REG1B = st.sidebar.number_input('REG1B: ')
         REG1A = st.sidebar.number_input('REG1A')
         TFF1 = st.sidebar.number_input('TFF1: ')
-        data = {'age': age, 'sex': sex, 'ca_19_19': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
+        data = {'unnamed': 0, 'age': age, 'sex': sex, 'plasma_CA19_9': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
                 'REG1B': REG1B, 'REG1A': REG1A, 'TFF1': TFF1}
         features = pd.DataFrame(data, index=[0])
         return features
@@ -86,6 +91,4 @@ else:
 
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
-if st.button("Input raw data"):
-    session_state.active_tab = "Input Raw Data"
-
+if st.button("Input
