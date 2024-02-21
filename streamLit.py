@@ -42,8 +42,6 @@ if session_state.active_tab == "Upload a .CSV":
                     st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                     st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                     st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
-                else:
-                    st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -77,11 +75,10 @@ else:
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
-            else:
-                st.error(cancer_detected)
         st.write(input_df)
 
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
