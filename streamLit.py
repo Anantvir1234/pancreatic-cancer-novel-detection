@@ -71,9 +71,8 @@ else:
         return features
     
     input_df = user_input_features()
-    if input_df is not None:
-        process_button_disabled = "error" in st.session_state or input_df is None
-        if st.button("Process values", disabled=process_button_disabled):
+    if st.button("Process values", disabled="error" in st.session_state):
+        if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
             cancer_detected = bool(predictions[0])
