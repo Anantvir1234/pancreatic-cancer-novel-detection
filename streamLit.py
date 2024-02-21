@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict(data, model_path="model_xgb.sav"):
+def predict_proba(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
@@ -39,7 +39,7 @@ if session_state.active_tab == "Upload a .CSV":
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 st.subheader("Final Results:")
-                probabilities = predict(df[required_columns])
+                probabilities = predict_proba(df[required_columns])
                 cancer_detected = bool(probabilities[0, 1] > 0.5)
                 if not isinstance(cancer_detected, str):
                     probability_of_cancer = max(probabilities[:, 1])
@@ -78,7 +78,7 @@ else:
     if input_df is not None:
         if st.button("Process values", disabled="error" in st.session_state):
             st.subheader("Final Results:")
-            probabilities = predict(input_df)
+            probabilities = predict_proba(input_df)
             cancer_detected = bool(probabilities[0, 1] > 0.5)
             if not isinstance(cancer_detected, str):
                 probability_of_cancer = max(probabilities[:, 1])
@@ -91,5 +91,4 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
-
 
