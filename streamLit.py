@@ -56,19 +56,26 @@ else:
             st.error("Age should be greater than 0.")
             return None
         sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1, format="%d")
-        if sex not in [0, 1]:
-            st.error("Gender should be either 0 or 1.")
-            return None
-        ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
-        creatinine = st.sidebar.number_input('Creatinine: ')
-        LYVE1 = st.sidebar.number_input('LYVE1: ')
-        REG1B = st.sidebar.number_input('REG1B: ')
-        REG1A = st.sidebar.number_input('REG1A')
-        TFF1 = st.sidebar.number_input('TFF1: ')
-        data = {'age': age, 'sex': sex, 'ca_19_19': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
-                'REG1B': REG1B, 'REG1A': REG1A, 'TFF1': TFF1}
-        features = pd.DataFrame(data, index=[0])
-        return features
+        def user_input_features():
+    age = st.sidebar.number_input('Age of persons: ', min_value=1)
+    if age <= 0:
+        st.error("Age should be greater than 0.")
+        return None
+    sex = st.sidebar.number_input('Gender of persons 1=Female, 2=Male: ', min_value=1, max_value=2, format="%d")
+    if sex not in [1, 2]:
+        st.error("Gender should be either 1 or 2.")
+        return None
+    ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
+    creatinine = st.sidebar.number_input('Creatinine: ')
+    LYVE1 = st.sidebar.number_input('LYVE1: ')
+    REG1B = st.sidebar.number_input('REG1B: ')
+    REG1A = st.sidebar.number_input('REG1A: ')
+    TFF1 = st.sidebar.number_input('TFF1: ')
+    data = {'age': age, 'sex': sex, 'ca_19_19': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
+            'REG1B': REG1B, 'REG1A': REG1A, 'TFF1': TFF1}
+    features = pd.DataFrame(data, index=[0])
+    return features
+
     
     input_df = user_input_features()
     if st.button("Process values", disabled="error" in st.session_state):
@@ -86,3 +93,4 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+    
