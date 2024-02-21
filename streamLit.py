@@ -16,13 +16,13 @@ def predict(data, model_path="model_xgb.sav"):
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
-upload_tab, sample_tab = st.tabs(["Upload a .CSV", "Input raw data"])
+upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"])
 
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input data on the left.")
 st.sidebar.header('Please Input Features Value')
 
+with input_tab:
 # Collects user input features into dataframe
-
 def user_input_features():
     age = st.sidebar.number_input('Age of persons: ')
     sex = st.sidebar.selectbox('Gender of persons 0=Female, 1=Male: ',(0,1))
@@ -41,6 +41,7 @@ input_df = user_input_features()
 
 st.write(input_df)
 
+with upload_tab:
 # Upload CSV file
 uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file is not None:
