@@ -65,7 +65,7 @@ else:
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
     st.write(input_df)
 
-if st.button("Input raw data"):
-    session_state.active_tab = "Input raw data"
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
+if st.button("Input raw data"):
+    session_state.active_tab = "Input raw data"
