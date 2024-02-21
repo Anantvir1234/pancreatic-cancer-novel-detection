@@ -43,8 +43,8 @@ if session_state.active_tab == "Upload a .CSV":
                         st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                         st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                         st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
-                else:
-                    st.error(cancer_detected)
+            else:
+                st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
