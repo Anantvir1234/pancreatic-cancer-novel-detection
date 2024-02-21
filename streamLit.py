@@ -78,12 +78,13 @@ else:
             st.subheader("Accuracy:")
             accuracy = probabilities[0] if cancer_detected else 1 - probabilities[0]
             st.write(f"Accuracy: {accuracy * 100:.2f}%")
-    st.write(input_df)
+            st.write(input_df)
 
 if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
 
 
