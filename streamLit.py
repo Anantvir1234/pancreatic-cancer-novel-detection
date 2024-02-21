@@ -2,12 +2,12 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict_proba(data, model_path="model_xgb.sav"):
+def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-            probabilities = clf.predict_proba(data)
-        return probabilities
+            predictions = clf.predict(data)
+        return predictions
     except Exception as e:
         return f"Error: {e}"
 
@@ -35,12 +35,11 @@ if session_state.active_tab == "Upload a .CSV":
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
-                probabilities = predict_proba(df[required_columns])
-                cancer_detected = any(probabilities[:, 1] > 0.5)  # Assuming positive class is index 1
+                predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
+                cancer_detected = any(predictions)
                 if not isinstance(cancer_detected, str):
-                    probability_of_cancer = max(probabilities[:, 1])
-                    st.write(f"Pancreatic Cancer Detected with {probability_of_cancer*100:.2f}% chance")
+                    st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                     st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                     st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
                 else:
@@ -73,13 +72,12 @@ else:
     
     input_df = user_input_features()
     if input_df is not None:
-        if st.button("Process values", disabled="error" in st.session_state):
-            probabilities = predict_proba(input_df)
+        if st.button("Process values", disabled=(input_df is None)):
+            predictions = predict(input_df)
             st.subheader("Final Results:")
-            cancer_detected = bool(probabilities[0, 1] > 0.5)  # Assuming positive class is index 1
+            cancer_detected = bool(predictions[0])
             if not isinstance(cancer_detected, str):
-                probability_of_cancer = max(probabilities[:, 1])
-                st.write(f"Pancreatic Cancer Detected with {probability_of_cancer*100:.2f}% chance")
+                st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
@@ -88,4 +86,5 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
