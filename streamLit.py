@@ -48,7 +48,10 @@ else:
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
-        age = st.sidebar.number_input('Age of persons: ')
+        age = st.sidebar.number_input('Age of persons: ', min_value=1, max_value=2, step=1)
+        if age not in [1, 2]:
+            st.error("Age should be either 1 or 2.")
+            return None
         sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1, format="%d")
         if sex not in [0, 1]:
             st.error("Gender should be either 0 or 1.")
@@ -79,6 +82,7 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
 
 
