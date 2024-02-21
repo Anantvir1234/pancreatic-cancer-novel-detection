@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+# Check if 'xgboost' is installed, if not, prompt the user to install it
+try:
+    import xgboost
+except ImportError:
+    st.error("The 'xgboost' library is required for this application. Please install it using 'pip install xgboost'.")
+    st.stop()
+
 def predict_proba(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -90,4 +97,3 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
-
