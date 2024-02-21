@@ -45,7 +45,7 @@ with upload_tab:
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 with input_tab:
-    with st.sidebar.header('Please Input Features Value')
+    with st.sidebar.header('Please Input Features Value'):
     # Collects user input features into dataframe
         def user_input_features():
             age = st.sidebar.number_input('Age of persons: ')
