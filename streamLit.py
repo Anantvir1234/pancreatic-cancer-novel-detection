@@ -16,6 +16,8 @@ def predict(data, model_path="model_xgb.sav"):
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
+upload_tab, sample_tab = st.tabs(["Upload a .CSV", "Input raw data"])
+
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input data on the left.")
 st.sidebar.header('Please Input Features Value')
 
