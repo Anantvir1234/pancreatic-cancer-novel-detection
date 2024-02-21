@@ -60,6 +60,7 @@ else:
         if sex not in [0, 1]:
             st.error("Gender should be either 0 or 1.")
             return None
+        age = st.sidebar.number_input('Age: ')
         ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
         creatinine = st.sidebar.number_input('Creatinine: ')
         LYVE1 = st.sidebar.number_input('LYVE1: ')
