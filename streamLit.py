@@ -16,9 +16,8 @@ def predict(data, model_path="model_xgb.sav"):
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
-upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"])
-
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input data on the left.")
+upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"])
 
 with upload_tab:
     # Upload CSV file
@@ -59,7 +58,7 @@ with input_tab:
 
         data = {'age':age, 'sex':sex, 'ca_19_19':ca_19_19, 'creatinine':creatinine, 'LYVE1':LYVE1, 'REG1B':REG1B, 'REG1A':REG1A, 'TFF1':TFF1,
                         }
-        features = pd.DataFrame(data, index=[0])
-        return features
+    features = pd.DataFrame(data, index=[0])
+    return features
     input_df = user_input_features()
     st.write(input_df)
