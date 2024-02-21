@@ -22,9 +22,8 @@ session_state = st.session_state
 if 'active_tab' not in session_state:
     session_state.active_tab = "Upload a .CSV"
 
-upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"], selected_tab=session_state.active_tab)
-
-if upload_tab:
+# Display tabs based on active_tab value
+if session_state.active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for pancreatic cancer detection.")
@@ -69,5 +68,8 @@ else:
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
     st.write(input_df)
 
-# Update the active tab in the session state
-session_state.active_tab = st.session_state.tab
+# Add tabs switcher
+if st.button("Switch to Input raw data"):
+    session_state.active_tab = "Input raw data"
+if st.button("Switch to Upload a .CSV"):
+    session_state.active_tab = "Upload a .CSV"
