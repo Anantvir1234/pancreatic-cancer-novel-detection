@@ -57,7 +57,7 @@ else:
         if age <= 0:
             st.error("Age should be greater than 0.")
             return None
-        sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1, format="%d")
+        sex = st.sidebar.number_input('Gender of persons 0=Female, 1=Male: ', min_value=0, max_value=1)
         if sex not in [0, 1]:
             st.error("Gender should be either 0 or 1.")
             return None
