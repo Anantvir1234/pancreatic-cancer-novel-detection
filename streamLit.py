@@ -31,10 +31,10 @@ if session_state.active_tab == "Upload a .CSV":
         df = pd.read_csv(uploaded_file)
         st.subheader("Preview of the uploaded data:")
         st.write(df.head())
+
+        # Check if the required columns are present in the uploaded CSV
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-        sorted_required_columns = sorted(required_columns)
-        sorted_df_columns = sorted(df.columns)
-        if sorted_required_columns == sorted_df_columns:
+        if set(required_columns).issubset(df.columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
@@ -47,7 +47,7 @@ if session_state.active_tab == "Upload a .CSV":
                 else:
                     st.error(cancer_detected)
         else:
-            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+            st.warning("The uploaded CSV file does not have all the required column names for pancreatic cancer detection. Please check the file structure")
 
 else:
     st.sidebar.header('Please Input Features Value')
