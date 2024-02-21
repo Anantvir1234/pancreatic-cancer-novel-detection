@@ -36,15 +36,15 @@ if session_state.active_tab == "Upload a .CSV":
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 probabilities = predict_proba(df[required_columns])
-                cancer_detected = any(probabilities[:, 1] > 0.5)  # Assuming positive class is index 1
-                st.subheader("Final Results:")
-                if not isinstance(cancer_detected, str):
+                if isinstance(probabilities, str):
+                    st.error(probabilities)
+                else:
+                    cancer_detected = any(probabilities[:, 1] > 0.5)  # Assuming positive class is index 1
+                    st.subheader("Final Results:")
                     probability_of_cancer = max(probabilities[:, 1])
                     st.write(f"Pancreatic Cancer Detected with {probability_of_cancer*100:.2f}% chance")
                     st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                     st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
-                else:
-                    st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -75,9 +75,11 @@ else:
     if input_df is not None:
         if st.button("Process values", disabled="error" in st.session_state):
             probabilities = predict_proba(input_df)
-            st.subheader("Final Results:")
-            cancer_detected = bool(probabilities[0, 1] > 0.5)  # Assuming positive class is index 1
-            if not isinstance(cancer_detected, str):
+            if isinstance(probabilities, str):
+                st.error(probabilities)
+            else:
+                st.subheader("Final Results:")
+                cancer_detected = bool(probabilities[0, 1] > 0.5)  # Assuming positive class is index 1
                 probability_of_cancer = max(probabilities[:, 1])
                 st.write(f"Pancreatic Cancer Detected with {probability_of_cancer*100:.2f}% chance")
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
@@ -88,3 +90,4 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
