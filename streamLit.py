@@ -45,22 +45,21 @@ with upload_tab:
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 with input_tab:
-    st.sidebar.header('Please Input Features Value')
+    with st.sidebar.header('Please Input Features Value')
     # Collects user input features into dataframe
-    def user_input_features():
-        age = st.sidebar.number_input('Age of persons: ')
-        sex = st.sidebar.selectbox('Gender of persons 0=Female, 1=Male: ',(0,1))
-        ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
-        creatinine = st.sidebar.number_input('Creatinine: ')
-        LYVE1 = st.sidebar.number_input('LYVE1: ')
-        REG1B =  st.sidebar.number_input('REG1B: ')
-        REG1A = st.sidebar.number_input('REG1A')
-        TFF1 = st.sidebar.number_input('TFF1: ')
+        def user_input_features():
+            age = st.sidebar.number_input('Age of persons: ')
+            sex = st.sidebar.selectbox('Gender of persons 0=Female, 1=Male: ',(0,1))
+            ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
+            creatinine = st.sidebar.number_input('Creatinine: ')
+            LYVE1 = st.sidebar.number_input('LYVE1: ')
+            REG1B =  st.sidebar.number_input('REG1B: ')
+            REG1A = st.sidebar.number_input('REG1A')
+            TFF1 = st.sidebar.number_input('TFF1: ')
 
-        data = {'age':age, 'sex':sex, 'ca_19_19':ca_19_19, 'creatinine':creatinine, 'LYVE1':LYVE1, 'REG1B':REG1B, 'REG1A':REG1A, 'TFF1':TFF1,
-                }
-        features = pd.DataFrame(data, index=[0])
-        return features
-    input_df = user_input_features()
-
-    st.write(input_df)
+            data = {'age':age, 'sex':sex, 'ca_19_19':ca_19_19, 'creatinine':creatinine, 'LYVE1':LYVE1, 'REG1B':REG1B, 'REG1A':REG1A, 'TFF1':TFF1,
+                        }
+            features = pd.DataFrame(data, index=[0])
+            return features
+        input_df = user_input_features()
+        st.write(input_df)
