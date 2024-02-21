@@ -42,6 +42,8 @@ if session_state.active_tab == "Upload a .CSV":
                     st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                     st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                     st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+                else:
+                    st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -49,7 +51,10 @@ else:
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
-        age = st.sidebar.number_input('Age of persons: ')
+        age = st.sidebar.number_input('Age of persons: ', min_value=1)
+        if age <= 0:
+            st.error("Age should be greater than 0.")
+            return None
         sex = st.sidebar.number_input('Gender of persons 1=Female, 2=Male: ', min_value=1, max_value=2, format="%d")
         if sex not in [1, 2]:
             st.error("Gender should be either 1 or 2.")
@@ -81,4 +86,5 @@ if st.button("Upload a .CSV"):
     session_state.active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
     session_state.active_tab = "Input Raw Data"
+
 
