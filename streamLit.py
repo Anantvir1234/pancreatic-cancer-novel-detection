@@ -58,7 +58,7 @@ with input_tab:
 
         data = {'age':age, 'sex':sex, 'ca_19_19':ca_19_19, 'creatinine':creatinine, 'LYVE1':LYVE1, 'REG1B':REG1B, 'REG1A':REG1A, 'TFF1':TFF1,
                         }
-    features = pd.DataFrame(data, index=[0])
-    return features
+        features = pd.DataFrame(data, index=[0])
+        return features
     input_df = user_input_features()
     st.write(input_df)
