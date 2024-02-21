@@ -14,7 +14,7 @@ def predict(data, model_path="model_xgb.sav"):
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
-st.image('image-removebg-preview (15).png')
+st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
