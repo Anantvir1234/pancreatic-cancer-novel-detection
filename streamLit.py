@@ -11,16 +11,20 @@ def predict(data, model_path="model_xgb.sav"):
     except Exception as e:
         return f"Error: {e}"
 
+# Function to create or get the session state
+def get_session_state():
+    if 'active_tab' not in st.session_state:
+        st.session_state.active_tab = "Upload a .CSV"
+    return st.session_state
+
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-session_state = st.session_state
-
-if 'active_tab' not in session_state:
-    session_state.active_tab = "Upload a .CSV"
+# Get or create the session state
+session_state = get_session_state()
 
 if session_state.active_tab == "Upload a .CSV":
     st.sidebar.header('Upload a CSV file')
@@ -38,7 +42,7 @@ if session_state.active_tab == "Upload a .CSV":
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             
-            if st.button("Process Uploaded File", disabled="error" in st.session_state):
+            if st.button("Process Uploaded File", disabled="error" in session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 
@@ -84,7 +88,7 @@ else:
     
     input_df = user_input_features()
     
-    if st.button("Process values", disabled="error" in st.session_state):
+    if st.button("Process values", disabled="error" in session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
