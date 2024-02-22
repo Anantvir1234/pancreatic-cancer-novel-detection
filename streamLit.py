@@ -72,7 +72,7 @@ else:
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
-            cancer_detected = (predictions[0])
+            cancer_detected = bool(predictions[0])
 
             if not isinstance(cancer_detected, str):
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
