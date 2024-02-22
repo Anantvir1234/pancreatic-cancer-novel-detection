@@ -42,7 +42,7 @@ if session_state.active_tab == "Upload a .CSV":
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             
-            if st.button("Process Uploaded File", disabled="error" in session_state):
+            if st.button("Process Uploaded File", key="process_uploaded", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 
@@ -88,7 +88,7 @@ else:
     
     input_df = user_input_features()
     
-    if st.button("Process values", disabled="error" in session_state):
+    if st.button("Process values", key="process_values", disabled="error" in st.session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -102,8 +102,8 @@ else:
                 
             st.write(input_df)
 
-    if st.button("Upload a .CSV"):
+    if st.button("Upload a .CSV", key="upload_csv"):
         session_state.active_tab = "Upload a .CSV"
 
-    if st.button("Input raw data"):
+    if st.button("Input raw data", key="input_raw_data"):
         session_state.active_tab = "Input Raw Data"
