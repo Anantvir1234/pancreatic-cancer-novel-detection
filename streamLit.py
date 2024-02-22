@@ -1,6 +1,3 @@
-pip install --upgrade streamlit
-pip install --upgrade numpy
-
 import streamlit as st
 import pandas as pd
 import pickle
