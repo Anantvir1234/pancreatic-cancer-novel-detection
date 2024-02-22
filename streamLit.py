@@ -24,9 +24,9 @@ st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
 # Get or create the session state
-session_state = get_session_state()
+get_session_state()
 
-if session_state.active_tab == "Upload a .CSV":
+if st.session_state.active_tab == "Upload a .CSV":
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
     
@@ -103,7 +103,7 @@ else:
             st.write(input_df)
 
     if st.button("Upload a .CSV", key="upload_csv"):
-        session_state.active_tab = "Upload a .CSV"
+        st.session_state.active_tab = "Upload a .CSV"
 
     if st.button("Input raw data", key="input_raw_data"):
-        session_state.active_tab = "Input Raw Data"
+        st.session_state.active_tab = "Input Raw Data"
