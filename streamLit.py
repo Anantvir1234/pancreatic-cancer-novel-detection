@@ -17,12 +17,9 @@ st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-session_state = st.session_state
+active_tab = st.radio("Select Mode", ["Upload a .CSV", "Input raw data"])
 
-if 'active_tab' not in session_state:
-    session_state.active_tab = "Upload a .CSV"
-
-if session_state.active_tab == "Upload a .CSV":
+if active_tab == "Upload a .CSV":
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
@@ -35,7 +32,7 @@ if session_state.active_tab == "Upload a .CSV":
 
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File", disabled="error" in st.session_state):
+            if st.button("Process Uploaded File"):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -71,7 +68,7 @@ else:
 
     input_df = user_input_features()
 
-    if st.button("Process values", disabled="error" in st.session_state):
+    if st.button("Process values"):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -84,8 +81,8 @@ else:
 
     st.write(input_df)
 
-if st.button("Upload a .CSV"):
-    session_state.active_tab = "Upload a .CSV"
+if st.button("Switch to Upload a .CSV"):
+    active_tab = "Upload a .CSV"
 
-if st.button("Input raw data"):
-    session_state.active_tab = "Input Raw Data"
+if st.button("Switch to Input raw data"):
+    active_tab = "Input Raw Data"
