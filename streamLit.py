@@ -80,9 +80,3 @@ else:
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
 
     st.write(input_df)
-
-if st.button("Switch to Upload a .CSV"):
-    active_tab = "Upload a .CSV"
-
-if st.button("Switch to Input raw data"):
-    active_tab = "Input Raw Data"
