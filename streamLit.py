@@ -8,6 +8,8 @@ def predict(data, model_path="model_xgb.sav"):
             clf = pickle.load(model_file)
             predictions = clf.predict(data)
         return predictions
+    except FileNotFoundError:
+        return "Error: Model file not found. Please make sure the model file is available at the specified path."
     except Exception as e:
         return f"Error: {e}"
 
