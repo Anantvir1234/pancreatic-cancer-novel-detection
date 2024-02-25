@@ -46,6 +46,8 @@ if active_tab == "Upload a .CSV":
 
                 if not isinstance(cancer_detected, str):
                     st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+
+                    # Checkboxes reflecting the results
                     st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                     st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         else:
@@ -86,6 +88,8 @@ else:
 
             if not isinstance(cancer_detected, str):
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+
+                # Checkboxes reflecting the results
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
 
