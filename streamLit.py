@@ -14,6 +14,7 @@ def predict(data, model_path="model_xgb.sav"):
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
+st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
@@ -29,17 +30,10 @@ if session_state.active_tab == "Upload a .CSV":
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
-
-        # Ensure required columns are present and handle the unnamed column
-        required_columns = ["unnamed", "sex", "REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+        st.subheader("Preview of the uploaded data:")
+        st.write(df.head())
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
-            # Rename the unnamed column if present
-            if 'Unnamed: 0' in df.columns:
-                df.rename(columns={'Unnamed: 0': 'unnamed'}, inplace=True)
-
-            st.subheader("Preview of the uploaded data:")
-            st.write(df.head())
-
             st.subheader("Pancreatic Cancer Detection Results:")
             if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
@@ -52,7 +46,7 @@ if session_state.active_tab == "Upload a .CSV":
                 else:
                     st.error(cancer_detected)
         else:
-            st.warning("The uploaded CSV file does not have all the required column names for pancreatic cancer detection. Please check the file structure")
+            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
     st.sidebar.header('Please Input Features Value')
@@ -72,7 +66,7 @@ else:
         REG1B = st.sidebar.number_input('REG1B: ')
         REG1A = st.sidebar.number_input('REG1A')
         TFF1 = st.sidebar.number_input('TFF1: ')
-        data = {'unnamed': 0, 'age': age, 'sex': sex, 'plasma_CA19_9': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
+        data = {'age': age, 'sex': sex, 'ca_19_19': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
                 'REG1B': REG1B, 'REG1A': REG1A, 'TFF1': TFF1}
         features = pd.DataFrame(data, index=[0])
         return features
