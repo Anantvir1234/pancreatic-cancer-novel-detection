@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+# Function to load the model and make predictions
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -11,14 +12,17 @@ def predict(data, model_path="model_xgb.sav"):
     except Exception as e:
         return f"Error: {e}"
 
+# Streamlit configuration and UI setup
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
+# User selects mode: Upload a CSV or Input raw data
 active_tab = st.radio("Select Mode", ["Upload a .CSV", "Input raw data"])
 
+# Handling the case where the user uploads a CSV file
 if active_tab == "Upload a .CSV":
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
@@ -28,10 +32,13 @@ if active_tab == "Upload a .CSV":
         df = pd.read_csv(uploaded_file)
         st.subheader("Preview of the uploaded data:")
         st.write(df.head())
+        
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
 
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
+            
+            # Button to trigger the processing of the uploaded file
             if st.button("Process Uploaded File"):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
@@ -44,9 +51,11 @@ if active_tab == "Upload a .CSV":
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
+# Handling the case where the user inputs raw data
 else:
     st.sidebar.header('Please Input Features Value')
 
+    # Function to get user input for features
     def user_input_features():
         age = st.sidebar.number_input('Age of persons: ', min_value=1)
         if age <= 0:
@@ -68,6 +77,7 @@ else:
 
     input_df = user_input_features()
 
+    # Button to trigger the processing of user-input features
     if st.button("Process values"):
         if input_df is not None:
             predictions = predict(input_df)
