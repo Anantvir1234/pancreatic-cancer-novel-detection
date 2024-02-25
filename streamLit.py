@@ -9,9 +9,11 @@ def predict(data, model_path="model_xgb.sav"):
             predictions = clf.predict(data)
         return predictions
     except FileNotFoundError:
-        return "Error: Model file not found. Please make sure the model file is available at the specified path."
+        st.error("Error: Model file not found. Please make sure the model file is available at the specified path.")
+        raise
     except Exception as e:
-        return f"Error: {e}"
+        st.error(f"Error: {e}")
+        raise
 
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
