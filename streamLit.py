@@ -26,7 +26,7 @@ def load_model(model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-        return clf
+            return clf
     except Exception as e:
         return f"Error loading model: {e}"
 
@@ -76,7 +76,7 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[common_columns])
-                threshold = 0.5  # Adjusted threshold to 0.5
+                threshold = 0.5  # Set threshold to 0.5
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
@@ -87,12 +87,7 @@ if option == "Upload a CSV file":
                 # Display model information without the 'device' attribute
                 st.subheader("Loaded Model Information:")
                 model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
-                for key, value in model_info.items():
-                    st.write(f"{key}: {value}")
-
-                # Display the XGBoost model
-                st.subheader("XGBoost Model:")
-                st.write(clf.get_booster().get_dump()[0])  # Display the first tree in the booster
+                st.write(model_info)
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
