@@ -12,6 +12,10 @@ except ImportError:
     subprocess.run([sys.executable, "-m", "pip", "install", "lightgbm"])
     st.success("LightGBM installed successfully!")
 
+# Set page configuration
+title = "Pancreatic Cancer Detection"
+st.set_page_config(page_title=title)
+
 # Define clf at the beginning of the script
 clf = None
 
@@ -32,8 +36,6 @@ def predict(data):
         return f"Error making predictions: {e}"
 
 # Title and description
-title = "Pancreatic Cancer Detection"
-st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw data.")
 
