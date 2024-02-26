@@ -30,12 +30,12 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Button for processing the uploaded file
-            if st.button("Process Uploaded File", key="uploaded_file_button"):
+            if st.button("Process Uploaded File"):
                 # Get predictions using the pre-trained model
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
@@ -46,34 +46,21 @@ if option == "Upload a CSV file":
 else:
     # Input raw data
     st.subheader("Please Input Features Value")
-
-    # Input numerical values for each column
-    biomarkers = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B"]
-    input_values = {}
-    for biomarker in biomarkers:
-        input_values[biomarker] = st.number_input(f"{biomarker}: ", min_value=0)
-
-    # Input for age and gender
     age = st.number_input('Age of persons: ', min_value=1)
-    gender = st.number_input('Gender of persons (0=Male, 1=Female): ', min_value=0, max_value=1, format="%d")
+    sex = st.number_input('Gender of persons (0=Female, 1=Male): ', min_value=0, max_value=1, format="%d")
 
     if age < 1:
         st.error("Age should be greater than or equal to 1.")
-    elif gender not in [0, 1]:
+    elif sex not in [0, 1]:
         st.error("Gender should be either 0 or 1.")
     else:
-        input_values["age"] = age
-        input_values["gender"] = gender
+        # Create a DataFrame with the input data
+        raw_data = {'age': age, 'sex': sex}
+        input_df = pd.DataFrame(raw_data, index=[0])
 
         # Button for processing the inputted raw data
-        if st.button("Process Raw Data", key="raw_data_button"):
-            # Create a DataFrame with the input data
-            input_df = pd.DataFrame(input_values, index=[0])
-
+        if st.button("Process Raw Data"):
             # Get predictions using the pre-trained model
-            predictions = predict(input_df[required_columns])
+            predictions = predict(input_df)
             st.subheader("Final Results:")
             st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
-
-
