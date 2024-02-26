@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 import subprocess
 import os
+import xgboost as xgb
 
 # Define the path to your virtual environment
 venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtual environment
