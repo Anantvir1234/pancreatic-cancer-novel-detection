@@ -1,13 +1,22 @@
 import streamlit as st
 import pandas as pd
-import pickle
 import xgboost as xgb
+import subprocess
+import sys
 
 def train_model():
-    # Assuming you have your training data loaded in train_data and labels in labels
-    # Adjust this part based on how you originally trained your XGBoost model
-    train_data = pd.DataFrame()  # Replace with your actual training data
-    labels = pd.Series()  # Replace with your actual labels
+    # Replace these placeholders with your actual training data and labels
+    train_data = pd.DataFrame({
+        "REG1A": [1911.565138],
+        "creatinine": [1.31196],
+        "TFF1": [369.344],
+        "LYVE1": [5.917939],
+        "plasma_CA19_9": [1916],
+        "REG1B": [381.221725],
+        "age": [73],
+        "gender": [0]  # Assuming M=0, F=1 for gender
+    })
+    labels = pd.Series([3])  # Assuming the diagnosis label is 3 based on the provided dataset
 
     clf = xgb.XGBClassifier()
     clf.fit(train_data, labels)
@@ -15,28 +24,30 @@ def train_model():
     # Save the model
     clf.save_model("model_xgb.json")
 
-train_model()
+# Check if xgboost is installed, if not, attempt to install
+try:
+    import xgboost
+except ImportError:
+    st.error("xgboost not found. Attempting to install xgboost...")
 
-def load_model(model_path="model_xgb.json"):
+    # Install xgboost
     try:
-        clf = xgb.XGBClassifier()
-        clf.load_model(model_path)
-        return clf
-    except Exception as e:
-        return f"Error loading model: {e}"
+        st.warning("Installing xgboost. This may take a few moments...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
+        import xgboost  # Check the import again after installation
+        st.success("xgboost has been successfully installed!")
+    except Exception as install_error:
+        st.error(f"Failed to install xgboost. Please install it manually with 'pip install xgboost' and then run the application. Error: {install_error}")
+        st.stop()
 
-def predict(data, model):
-    try:
-        predictions_proba = model.predict_proba(data)[:, 1]  # Probabilities of positive class
-        return predictions_proba
-    except Exception as e:
-        return f"Error: {e}"
-
-# Rest of your Streamlit code
-# ...
+# Run training function only when the app is loaded for the first time
+if not st.session_state.get('model_trained', False):
+    train_model()
+    st.session_state.model_trained = True
 
 # Load the model outside the Streamlit app to avoid retraining on every run
-model = load_model()
+model = xgb.XGBClassifier()
+model.load_model("model_xgb.json")
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -64,7 +75,7 @@ if option == "Upload a CSV file":
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
-                predictions_proba = predict(df[required_columns], model)
+                predictions_proba = model.predict_proba(df[required_columns])[:, 1]
                 threshold = 0.5  # Set the threshold for detection to 50%
 
                 # Convert probabilities to binary predictions using the threshold
@@ -97,7 +108,7 @@ else:
         input_df = pd.DataFrame(features_input, index=[0])
 
         # Get probabilities of positive class using the pre-trained model
-        predictions_proba = predict(input_df[required_columns], model)
+        predictions_proba = model.predict_proba(input_df[required_columns])[:, 1]
         threshold = 0.5  # Set the threshold for detection to 50%
 
         # Convert probabilities to binary predictions using the threshold
