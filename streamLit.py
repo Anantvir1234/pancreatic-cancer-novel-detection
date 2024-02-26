@@ -17,12 +17,7 @@ st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-# Default active tab
-active_tab = st.button("Upload a .CSV")
-if active_tab:
-    active_tab = "Upload a .CSV"
-
-if active_tab == "Upload a .CSV":
+if st.button("Upload a .CSV", key="upload_button"):
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
@@ -35,7 +30,7 @@ if active_tab == "Upload a .CSV":
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File"):
+            if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -48,7 +43,7 @@ if active_tab == "Upload a .CSV":
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
-else:
+if st.button("Input raw data", key="raw_data_button"):
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
@@ -72,7 +67,7 @@ else:
         return features
     
     input_df = user_input_features()
-    if st.button("Process values"):
+    if st.button("Process values", disabled="error" in st.session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -82,8 +77,3 @@ else:
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
-
-if st.button("Upload a .CSV"):
-    active_tab = "Upload a .CSV"
-if st.button("Input raw data"):
-    active_tab = "Input Raw Data"
