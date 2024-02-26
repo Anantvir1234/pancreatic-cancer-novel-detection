@@ -11,61 +11,51 @@ def predict(data, model_path="model_xgb.sav"):
     except Exception as e:
         return f"Error: {e}"
 
+def predict_pancreatic_cancer(data, model_path="model_xgb.sav"):
+    # Load the pre-trained model using pickle
+    with open(model_path, 'rb') as model_file:
+        clf = pickle.load(model_file)
+    features = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+    input_data = data[features]
+
+    # Make probability predictions
+    prediction_probs = clf.predict_proba(input_data)
+
+    return prediction_probs
+
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
-st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw data")
+st.markdown("Detect pancreatic cancer through an uploaded CSV file.")
 
-session_state = st.session_state
-if 'active_tab' not in session_state:
-    session_state.active_tab = "Upload a .CSV"
+# Upload CSV file
+uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 
-if session_state.active_tab == "Upload a .CSV":
-    # On the "Upload a .CSV" tab
-    st.sidebar.header('Upload a CSV file')
-    st.sidebar.markdown("Please upload a CSV file for detection.")
+if uploaded_file is not None:
+    # Load CSV data into a DataFrame
+    df = pd.read_csv(uploaded_file)
 
-    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        st.subheader("Preview of the uploaded data:")
-        st.write(df.head())
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
-        if all(col in df.columns for col in required_columns):
-            st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File"):
-                predictions = predict(df[required_columns])
-                st.subheader("Final Results:")
-                st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-        else:
-            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+    # Display the first few rows of the DataFrame
+    st.subheader("Preview of the uploaded data:")
+    st.write(df.head())
 
-else:
-    st.sidebar.header('Please Input Features Value')
-    
-    def user_input_features():
-        age = st.sidebar.number_input('Age of persons: ')
-        sex = st.sidebar.selectbox('Gender of persons 0=Female, 1=Male: ', (0, 1))
-        ca_19_19 = st.sidebar.number_input('Plasma CA_19_9: ')
-        creatinine = st.sidebar.number_input('Creatinine: ')
-        LYVE1 = st.sidebar.number_input('LYVE1: ')
-        REG1B = st.sidebar.number_input('REG1B: ')
-        REG1A = st.sidebar.number_input('REG1A')
-        TFF1 = st.sidebar.number_input('TFF1: ')
-        data = {'age': age, 'sex': sex, 'ca_19_19': ca_19_19, 'creatinine': creatinine, 'LYVE1': LYVE1,
-                'REG1B': REG1B, 'REG1A': REG1A, 'TFF1': TFF1}
-        features = pd.DataFrame(data, index=[0])
-        return features
-    
-    input_df = user_input_features()
-    if st.button("Process values"):
-        predictions = predict(input_df)
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-    st.write(input_df)
+    # Check for specific column names relevant to pancreatic cancer detection
+    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
 
-if st.button("Input raw data"):
-    session_state.active_tab = "Input raw data"
-if st.button("Upload a .CSV"):
-    session_state.active_tab = "Upload a .CSV"
+    if all(col in df.columns for col in required_columns):
+        st.subheader("Pancreatic Cancer Detection Results:")
+
+        # Button for processing the uploaded file
+        if st.button("Process Uploaded File"):
+            # Get predictions using the pre-trained model
+            predictions = predict(df[required_columns])
+            st.subheader("Final Results:")
+            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
+            # In the processing section:
+            prediction_probs = predict_pancreatic_cancer(df)
+            st.subheader("Model Prediction Probabilities:")
+            st.write(prediction_probs[:, 1])  # Assuming 1 is the cancer class, adjust if needed
+    else:
+        st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
