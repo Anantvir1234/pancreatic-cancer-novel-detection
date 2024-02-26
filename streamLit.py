@@ -60,6 +60,9 @@ if option == "Upload a CSV file":
         st.subheader("Preview of the uploaded data:")
         st.write(df.head().values.tolist())
 
+        # Print column names for debugging
+        st.write("Columns in the uploaded file:", df.columns.tolist())
+
         # Check for specific column names relevant to pancreatic cancer detection
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
         if all(col in df.columns for col in required_columns):
@@ -77,7 +80,7 @@ if option == "Upload a CSV file":
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
         else:
-            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure and make sure the column names match the required_columns list.")
 
 else:
     # Input raw data
@@ -104,4 +107,3 @@ else:
         predictions = predict(xgb.DMatrix(input_df[required_columns]), clf)
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
