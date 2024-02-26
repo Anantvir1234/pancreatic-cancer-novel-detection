@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 
 import streamlit as st
+from types import SimpleNamespace
 
 def get_session_state():
     if not hasattr(st, '_custom_session_state'):
