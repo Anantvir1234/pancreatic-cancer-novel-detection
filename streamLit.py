@@ -23,8 +23,14 @@ uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
+    # Convert boolean columns to bool type
+    bool_columns = df.select_dtypes(include='bool').columns
+    df[bool_columns] = df[bool_columns].astype(bool)
+
+    # Display the first few rows of the DataFrame
     st.subheader("Preview of the uploaded data:")
     st.dataframe(df.head())
+
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
