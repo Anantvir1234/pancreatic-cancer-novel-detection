@@ -21,7 +21,7 @@ def train_model():
         "age": [73],
         "gender": [0]  # Assuming M=0, F=1 for gender
     })
-    labels = pd.Series([3])  # Assuming the diagnosis label is 3 based on the provided dataset
+    labels = pd.Series([0])  # Assuming the diagnosis label is 0 for no cancer based on the provided dataset
 
     clf = xgb.XGBClassifier()
     clf.fit(train_data, labels)
@@ -40,8 +40,8 @@ def load_model(model_path="model_xgb.json"):
 
 def predict(data, model):
     try:
-        predictions = model.predict(data)
-        return predictions
+        predictions_proba = model.predict_proba(data)[:, 1]  # Probabilities of positive class
+        return predictions_proba
     except Exception as e:
         return f"Error making predictions: {e}"
 
@@ -53,6 +53,14 @@ st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw 
 
 # Choose between uploading a CSV file or inputting raw data
 option = st.radio("Select an option:", ["Upload a CSV file", "Input Raw Data"])
+
+# Run training function only when the app is loaded for the first time
+if not st.session_state.get('model_trained', False):
+    train_model()
+    st.session_state.model_trained = True
+
+# Load the model outside the Streamlit app to avoid retraining on every run
+model = load_model()
 
 if option == "Upload a CSV file":
     # Upload CSV file
@@ -72,16 +80,27 @@ if option == "Upload a CSV file":
         if all(col in df.columns for col in common_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
-            # Load model if not loaded
-            if clf is None:
-                clf = load_model()
-
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-                # Get predictions using the pre-trained model
-                predictions = predict(xgb.DMatrix(df[common_columns]), clf)
+                # Get probabilities of positive class using the pre-trained model
+                predictions_proba = predict(df[common_columns], model)
+                threshold = 0.5  # Set the threshold for detection to 50%
+
+                # Convert numpy array to Pandas Series
+                predictions_proba_series = pd.Series(predictions_proba)
+
+                # Convert the elements to float and fill NaN values with 0
+                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
+
+                # Convert probabilities to binary predictions using the threshold
+                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
+
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
+            # Display model information
+            st.subheader("Loaded Model Information:")
+            st.write(clf)
 
         else:
             st.warning("The uploaded CSV file does not have the expected common columns for pancreatic cancer detection. Please check the file structure and make sure the necessary columns are present.")
@@ -105,7 +124,19 @@ else:
         # Create a DataFrame with the input data
         input_df = pd.DataFrame(features_input, index=[0])
 
-        # Get predictions using the pre-trained model
-        predictions = predict(xgb.DMatrix(input_df[required_columns]), clf)
+        # Get probabilities of positive class using the pre-trained model
+        predictions_proba = predict(input_df[required_columns], model)
+        threshold = 0.5  # Set the threshold for detection to 50%
+
+        # Convert numpy array to Pandas Series
+        predictions_proba_series = pd.Series(predictions_proba)
+
+        # Convert the elements to float and fill NaN values with 0
+        predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
+
+        # Convert probabilities to binary predictions using the threshold
+        predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
+
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
