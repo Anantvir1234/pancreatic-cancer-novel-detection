@@ -77,8 +77,7 @@ else:
             predictions = predict(input_df)
             st.subheader("Final Results:")
             cancer_detected = bool(predictions[0])
-            if not isinstance(cancer_detected, str):
+         if not isinstance(cancer_detected, str):
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                if cancer_detected:
-                    st.checkbox("Not Detected", value=False, key='not_detected_checkbox')
+                st.text("☑️ Cancer Detected" if cancer_detected else "□ Not Detected")
         st.write(input_df)
