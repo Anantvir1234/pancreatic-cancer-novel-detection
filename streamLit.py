@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+# Move set_page_config to the very beginning
+title = "Pancreatic Cancer Detection"
+st.set_page_config(page_title=title)
+
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -13,8 +17,6 @@ def predict(data, model_path="model_xgb.sav"):
 
 # Title and description
 st.image('image-removebg-preview (17).png')
-title = "Pancreatic Cancer Detection"
-st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 session_state = st.session_state
