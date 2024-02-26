@@ -9,6 +9,13 @@ clf = None
 # Define required_columns
 required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
 
+# Custom session state class
+class SessionState:
+    def __init__(self, **kwargs):
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+
+# Function to train the model
 def train_model():
     # Replace these placeholders with your actual training data and labels
     train_data = pd.DataFrame({
@@ -29,7 +36,7 @@ def train_model():
     # Save the model using Booster.save_model
     clf.get_booster().save_model("model_xgb.json")
 
-# Load the model using xgb.Booster.load_model
+# Function to load the model
 def load_model(model_path="model_xgb.json"):
     try:
         booster = xgb.Booster()
@@ -38,6 +45,7 @@ def load_model(model_path="model_xgb.json"):
     except Exception as e:
         return f"Error loading model: {e}"
 
+# Function to make predictions
 def predict(data, model):
     try:
         predictions_proba = model.predict_proba(data)[:, 1]  # Probabilities of positive class
@@ -51,16 +59,20 @@ st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw data.")
 
-# Choose between uploading a CSV file or inputting raw data
-option = st.radio("Select an option:", ["Upload a CSV file", "Input Raw Data"])
+# Create a custom session state
+if 'model_trained' not in st.session_state:
+    st.session_state.model_trained = False
 
 # Run training function only when the app is loaded for the first time
-if not st.session_state.get('model_trained', False):
+if not st.session_state.model_trained:
     train_model()
     st.session_state.model_trained = True
 
 # Load the model outside the Streamlit app to avoid retraining on every run
 model = load_model()
+
+# Choose between uploading a CSV file or inputting raw data
+option = st.radio("Select an option:", ["Upload a CSV file", "Input Raw Data"])
 
 if option == "Upload a CSV file":
     # Upload CSV file
@@ -139,4 +151,5 @@ else:
 
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
 
