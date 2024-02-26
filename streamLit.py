@@ -16,26 +16,6 @@ class SessionState:
             self._state[attr] = value
         else:
             super().__setattr__(attr, value)
-%%writefile pancreatic_cancer_detection.py
-
-import streamlit as st
-import pandas as pd
-import pickle
-import xgboost as xgb
-
-# Custom session state class
-class SessionState:
-    def __init__(self, **kwargs):
-        self._state = kwargs
-
-    def __getattr__(self, attr):
-        return self._state.get(attr, None)
-
-    def __setattr__(self, attr, value):
-        if "_state" in self.__dict__:
-            self._state[attr] = value
-        else:
-            super().__setattr__(attr, value)
 
 # Define clf at the beginning of the script
 clf = None
@@ -96,7 +76,7 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[common_columns])
-                threshold = 0.3  # You can adjust this threshold based on your model and requirements
+                threshold = 0.5  # Adjusted threshold
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
