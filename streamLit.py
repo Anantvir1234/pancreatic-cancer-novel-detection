@@ -30,7 +30,7 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
