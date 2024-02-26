@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import subprocess
+import sys
 
 # Check if xgboost is installed
 try:
@@ -11,11 +12,11 @@ except ImportError:
 
     # Try installing xgboost
     try:
-        subprocess.run(["pip", "install", "xgboost"])
+        subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
         import xgboost  # Check the import again after installation
         st.success("xgboost has been successfully installed!")
     except Exception as install_error:
-        st.error(f"Failed to install xgboost. Please install it manually with 'pip install xgboost' and then run the application. Error: {install_error}")
+        st.error(f"Failed to install xgboost. Please install it manually with '{sys.executable} -m pip install xgboost' and then run the application. Error: {install_error}")
         st.stop()
 
 def predict(data, model_path="model_xgb.sav"):
