@@ -15,16 +15,19 @@ def predict(data, model_path="model_xgb.sav"):
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
-st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
+st.markdown("Detect pancreatic cancer through an uploaded CSV file or input data on the left.")
 
+# Create a session state dictionary
 session_state = st.session_state
 if 'active_tab' not in session_state:
     session_state.active_tab = "Upload a .CSV"
 
-if session_state.active_tab == "Upload a .CSV":
+upload_tab, input_tab = st.tabs(["Upload a .CSV", "Input raw data"], selected_tab=session_state.active_tab)
+
+if upload_tab:
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
-    st.sidebar.markdown("Please upload a CSV file for detection.")
+    st.sidebar.markdown("Please upload a CSV file for pancreatic cancer detection.")
 
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
@@ -42,6 +45,7 @@ if session_state.active_tab == "Upload a .CSV":
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
+    # On the "Input raw data" tab
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
@@ -65,7 +69,5 @@ else:
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
     st.write(input_df)
 
-if st.button("Upload a .CSV"):
-    session_state.active_tab = "Upload a .CSV"
-if st.button("Input raw data"):
-    session_state.active_tab = "Input Raw Data"
+# Update the active tab in the session state
+session_state.active_tab = st.session_state.tab
