@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+# Function to get or create a unique session state
+def get_session_state():
+    return st.session_state
+
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -16,6 +20,9 @@ title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
+
+# Initialize session state
+ss = get_session_state()
 
 # Define unique keys for each button
 upload_button_key = "upload_button"
@@ -36,7 +43,7 @@ if st.button("Upload a .CSV", key=upload_button_key):
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             # Check if Process Uploaded File button is clicked
-            if st.button("Process Uploaded File", key=f"process_uploaded_file_{upload_button_key}", disabled="error" in st.session_state):
+            if st.button("Process Uploaded File", key=f"process_uploaded_file_{upload_button_key}", disabled="error" in ss):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -75,7 +82,7 @@ if st.button("Input raw data", key=raw_data_button_key):
     
     input_df = user_input_features()
     # Check if Process Values button is clicked
-    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled="error" in st.session_state):
+    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled="error" in ss):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
