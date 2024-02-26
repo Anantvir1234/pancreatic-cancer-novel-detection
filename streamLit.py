@@ -62,6 +62,7 @@ if option == "Upload a CSV file":
 
         # Print column names for debugging
         st.write("Columns in the uploaded file:", df.columns.tolist())
+        st.write("Expected columns:", ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"])
 
         # Check for specific column names relevant to pancreatic cancer detection
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
