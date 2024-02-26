@@ -18,9 +18,10 @@ st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
 # Default active tab
-active_tab = st.button("Upload a .CSV")
-if active_tab:
-    active_tab = "Upload a .CSV"
+upload_csv_button = st.button("Upload a .CSV", key="upload_csv_button")
+input_raw_data_button = st.button("Input raw data", key="input_raw_data_button")
+
+active_tab = "Upload a .CSV" if upload_csv_button else "Input Raw Data"
 
 if active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
@@ -82,8 +83,3 @@ else:
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
-
-if st.button("Upload a .CSV"):
-    active_tab = "Upload a .CSV"
-if st.button("Input raw data"):
-    active_tab = "Input Raw Data"
