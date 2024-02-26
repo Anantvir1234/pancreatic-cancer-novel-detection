@@ -41,6 +41,7 @@ if active_tab == "Upload a .CSV":
                 if not isinstance(cancer_detected, str):
                     st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                     st.text("☑️ Cancer Detected" if cancer_detected else "☑️ Not Detected")
+                    st.text("☑️ Not Detected" if not cancer_detected else "")
                 else:
                     st.error(cancer_detected)
         else:
@@ -79,4 +80,5 @@ else:
             if not isinstance(cancer_detected, str):
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
                 st.text("☑️ Cancer Detected" if cancer_detected else "☑️ Not Detected")
+                st.text("☑️ Not Detected" if not cancer_detected else "")
         st.write(input_df)
