@@ -1,18 +1,19 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import subprocess
 
+# Check if xgboost is installed
 try:
     import xgboost
-except ImportError as e:
-    st.error(f"Error: {e}. Attempting to install the 'xgboost' library...")
+except ImportError:
+    st.error("xgboost not found. Attempting to install xgboost...")
+
+    # Try installing xgboost
     try:
-        # Attempt to install xgboost
-        st.warning("Trying to install xgboost. Please wait...")
-        import subprocess
         subprocess.run(["pip", "install", "xgboost"])
         import xgboost  # Check the import again after installation
-        st.success("'xgboost' has been successfully installed!")
+        st.success("xgboost has been successfully installed!")
     except Exception as install_error:
         st.error(f"Failed to install xgboost. Please install it manually with 'pip install xgboost' and then run the application. Error: {install_error}")
         st.stop()
