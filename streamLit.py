@@ -6,6 +6,9 @@ import xgboost as xgb
 # Define clf at the beginning of the script
 clf = None
 
+# Define required_columns
+required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+
 def train_model():
     # Replace these placeholders with your actual training data and labels
     train_data = pd.DataFrame({
@@ -89,8 +92,6 @@ else:
 
     # Input numerical values for each column and biomarker
     features_input = {}
-    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
-
     for column in required_columns:
         if column == "age":
             features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
