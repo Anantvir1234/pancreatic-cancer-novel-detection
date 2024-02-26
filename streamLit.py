@@ -1,23 +1,43 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import xgboost as xgb
 
 # Define clf at the beginning of the script
 clf = None
 
-def load_model(model_path="model_xgb.sav"):
-    global clf  # Declare clf as a global variable
+def train_model():
+    # Replace these placeholders with your actual training data and labels
+    train_data = pd.DataFrame({
+        "REG1A": [1911.565138],
+        "creatinine": [1.31196],
+        "TFF1": [369.344],
+        "LYVE1": [5.917939],
+        "plasma_CA19_9": [1916],
+        "REG1B": [381.221725],
+        "age": [73],
+        "gender": [0]  # Assuming M=0, F=1 for gender
+    })
+    labels = pd.Series([3])  # Assuming the diagnosis label is 3 based on the provided dataset
+
+    clf = xgb.XGBClassifier()
+    clf.fit(train_data, labels)
+
+    # Save the model using Booster.save_model
+    clf.get_booster().save_model("model_xgb.json")
+
+# Load the model using xgb.Booster.load_model
+def load_model(model_path="model_xgb.json"):
     try:
-        with open(model_path, 'rb') as model_file:
-            clf = pickle.load(model_file)
-        return clf
+        booster = xgb.Booster()
+        booster.load_model(model_path)
+        return booster
     except Exception as e:
         return f"Error loading model: {e}"
 
-def predict(data):
-    global clf  # Declare clf as a global variable
+def predict(data, model):
     try:
-        predictions = clf.predict(data)
+        predictions = model.predict(data)
         return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
@@ -41,7 +61,7 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
@@ -51,23 +71,8 @@ if option == "Upload a CSV file":
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-                # Get probabilities of positive class using the pre-trained model
-                predictions_proba = predict(df[required_columns])
-                threshold = 0.3  # You can adjust this threshold based on your model and requirements
-
-                # Convert numpy array to Pandas Series
-                predictions_proba_series = pd.Series(predictions_proba)
-
-                # Convert the elements to float and fill NaN values with 0
-                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
-
-                # Display model information
-                st.subheader("Loaded Model Information:")
-                st.write(clf)  # Display model information
-
-                # Convert probabilities to binary predictions using the threshold
-                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
-
+                # Get predictions using the pre-trained model
+                predictions = predict(xgb.DMatrix(df[required_columns]), clf)
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
@@ -75,7 +80,7 @@ if option == "Upload a CSV file":
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-   # Input raw data
+    # Input raw data
     st.subheader("Please Input Features Value")
 
     # Input numerical values for each column and biomarker
@@ -96,6 +101,7 @@ else:
         input_df = pd.DataFrame(features_input, index=[0])
 
         # Get predictions using the pre-trained model
-        predictions = predict(input_df[required_columns])
+        predictions = predict(xgb.DMatrix(input_df[required_columns]), clf)
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
