@@ -1,0 +1,2 @@
+sample_id,patient_cohort,sample_origin,age,sex,diagnosis,stage,benign_sample_diagnosis,plasma_CA19_9,creatinine,LYVE1,REG1B,TFF1,REG1A
+S570,Cohort1,BPTB,73,M,3,III,,1916,1.31196,5.917939,381.221725,1911.565138,369.344
