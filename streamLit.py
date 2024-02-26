@@ -14,14 +14,14 @@ def predict(data, model_path="model_xgb.sav"):
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
-st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-# Default tab value
-active_tab = st.radio("Select a Tab:", ["Upload a .CSV", "Input Raw Data"])
+session_state = st.session_state
+if 'active_tab' not in session_state:
+    session_state.active_tab = "Upload a .CSV"
 
-if active_tab == "Upload a .CSV":
+if session_state.active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
@@ -34,18 +34,20 @@ if active_tab == "Upload a .CSV":
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File"):
+            if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
-                cancer_detected = bool(predictions[0])
-                st.write("Pancreatic Cancer Detected" if cancer_detected else "Pancreatic Cancer Not Detected")
-                st.checkbox("Cancer Detected", value=cancer_detected, key='cancer_detected_checkbox', disabled=True)
-                st.checkbox("Not Detected", value=not cancer_detected, key='not_detected_checkbox', disabled=True)
+                cancer_detected = any(predictions)
+                if not isinstance(cancer_detected, str):
+                    st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+                    st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+                    st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
+                else:
+                    st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-    # On the "Input Raw Data" tab
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
@@ -69,12 +71,18 @@ else:
         return features
     
     input_df = user_input_features()
-    if st.button("Process values"):
+    if st.button("Process values", disabled="error" in st.session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
             cancer_detected = bool(predictions[0])
-            st.write("Pancreatic Cancer Detected" if cancer_detected else "Pancreatic Cancer Not Detected")
-            st.checkbox("Cancer Detected", value=cancer_detected, key='cancer_detected_checkbox', disabled=True)
-            st.checkbox("Not Detected", value=not cancer_detected, key='not_detected_checkbox', disabled=True)
+            if not isinstance(cancer_detected, str):
+                st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
+                st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+                st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
+
+if st.button("Upload a .CSV"):
+    session_state.active_tab = "Upload a .CSV"
+if st.button("Input raw data"):
+    session_state.active_tab = "Input Raw Data"
