@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import lightgbm as lgb
 
 # Define clf at the beginning of the script
 clf = None
@@ -17,8 +16,8 @@ def load_model(model_path="best_model_lgbm.sav"):
 def predict(data):
     global clf  # Declare clf as a global variable
     try:
-        predictions_proba = clf.predict(data)
-        return predictions_proba
+        predictions = clf.predict(data)
+        return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
 
@@ -55,12 +54,18 @@ if option == "Upload a CSV file":
                 predictions_proba = predict(df[required_columns])
                 threshold = 0.3  # You can adjust this threshold based on your model and requirements
 
+                # Convert numpy array to Pandas Series
+                predictions_proba_series = pd.Series(predictions_proba)
+
+                # Convert the elements to float and fill NaN values with 0
+                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
+
                 # Display model information
                 st.subheader("Loaded Model Information:")
                 st.write(clf)  # Display model information
 
                 # Convert probabilities to binary predictions using the threshold
-                predictions = (predictions_proba > threshold).astype(int)
+                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
 
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
@@ -69,7 +74,7 @@ if option == "Upload a CSV file":
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-    # Input raw data
+   # Input raw data
     st.subheader("Please Input Features Value")
 
     # Input numerical values for each column and biomarker
@@ -79,7 +84,7 @@ else:
     for column in required_columns:
         if column == "age":
             features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
-        elif column == "sex":
+        elif column == "gender":
             features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
         else:
             features_input[column] = st.number_input(f'{column}: ', min_value=0)
@@ -89,12 +94,7 @@ else:
         # Create a DataFrame with the input data
         input_df = pd.DataFrame(features_input, index=[0])
 
-        # Get probabilities of positive class using the pre-trained model
-        predictions_proba = predict(input_df[required_columns])
-
-        # Convert probabilities to binary predictions using the threshold
-        predictions = (predictions_proba > threshold).astype(int)
-
+        # Get predictions using the pre-trained model
+        predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
