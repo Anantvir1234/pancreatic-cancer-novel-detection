@@ -117,11 +117,5 @@ else:
             features_input[column] = st.number_input(f'{column}: ', min_value=0)
 
     # Button for processing the inputted raw data
-    if st.button("Process Raw Data", key="process_raw_data"):
-        # Create a DataFrame with the input data
-        input_df = pd.DataFrame(features_input, index=[0])
+    if 
 
-        # Get predictions using the pre-trained model
-        predictions = predict(input_df[required_columns])
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
