@@ -1,31 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import subprocess
-import sys
-import os
-
-# Define the path to your virtual environment
-venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtual environment
-
-# Check if xgboost is installed
-
-try:
-    import xgboost
-except ImportError:
-    st.error("xgboost not found. Attempting to install xgboost...")
-
-    # Try installing xgboost using the virtual environment Python executable
-    try:
-        venv_python = os.path.join(venv_dir, "bin", "python") if os.name == "posix" else os.path.join(venv_dir, "Scripts", "python.exe")
-        subprocess.run([venv_python, "-m", "pip", "install", "xgboost"])
-
-        # Check the import again after installation
-        import xgboost
-        st.success("xgboost has been successfully installed within the virtual environment!")
-    except Exception as install_error:
-        st.error(f"Failed to install xgboost within the virtual environment. Please install it manually with '{venv_python} -m pip install xgboost' and then run the application. Error: {install_error}")
-        st.stop()
 
 def predict(data, model_path="model_xgb.sav"):
     try:
@@ -35,13 +10,6 @@ def predict(data, model_path="model_xgb.sav"):
         return predictions
     except Exception as e:
         return f"Error: {e}"
-
-def display_results(predictions):
-    st.subheader("Final Results:")
-    if any(predictions):
-        st.write("Pancreatic Cancer Detected")
-    else:
-        st.write("Not Detected")
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -62,7 +30,7 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
@@ -70,8 +38,8 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get predictions using the pre-trained model
                 predictions = predict(df[required_columns])
-                display_results(predictions)
-                st.write("Debug: Model Predictions:", predictions)
+                st.subheader("Final Results:")
+                st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -98,5 +66,5 @@ else:
 
         # Get predictions using the pre-trained model
         predictions = predict(input_df[required_columns])
-        display_results(predictions)
-        st.write("Debug: Model Predictions:", predictions)
+        st.subheader("Final Results:")
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
