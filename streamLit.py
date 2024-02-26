@@ -1,15 +1,42 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import xgboost as xgb
 
-def predict(data, model_path="model_xgb.sav"):
+def train_model():
+    # Assuming you have your training data loaded in train_data and labels in labels
+    # Adjust this part based on how you originally trained your XGBoost model
+    train_data = pd.DataFrame()  # Replace with your actual training data
+    labels = pd.Series()  # Replace with your actual labels
+
+    clf = xgb.XGBClassifier()
+    clf.fit(train_data, labels)
+
+    # Save the model
+    clf.save_model("model_xgb.json")
+
+train_model()
+
+def load_model(model_path="model_xgb.json"):
     try:
-        with open(model_path, 'rb') as model_file:
-            clf = pickle.load(model_file)
-        predictions_proba = clf.predict_proba(data)[:, 1]  # Probabilities of positive class
+        clf = xgb.XGBClassifier()
+        clf.load_model(model_path)
+        return clf
+    except Exception as e:
+        return f"Error loading model: {e}"
+
+def predict(data, model):
+    try:
+        predictions_proba = model.predict_proba(data)[:, 1]  # Probabilities of positive class
         return predictions_proba
     except Exception as e:
         return f"Error: {e}"
+
+# Rest of your Streamlit code
+# ...
+
+# Load the model outside the Streamlit app to avoid retraining on every run
+model = load_model()
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -30,14 +57,14 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-               # Get probabilities of positive class using the pre-trained model
-                predictions_proba = predict(df[required_columns])
+                # Get probabilities of positive class using the pre-trained model
+                predictions_proba = predict(df[required_columns], model)
                 threshold = 0.5  # Set the threshold for detection to 50%
 
                 # Convert probabilities to binary predictions using the threshold
@@ -70,7 +97,7 @@ else:
         input_df = pd.DataFrame(features_input, index=[0])
 
         # Get probabilities of positive class using the pre-trained model
-        predictions_proba = predict(input_df[required_columns])
+        predictions_proba = predict(input_df[required_columns], model)
         threshold = 0.5  # Set the threshold for detection to 50%
 
         # Convert probabilities to binary predictions using the threshold
@@ -78,3 +105,4 @@ else:
 
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
