@@ -62,11 +62,11 @@ if option == "Upload a CSV file":
 
         # Print column names for debugging
         st.write("Columns in the uploaded file:", df.columns.tolist())
-        st.write("Expected columns:", ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"])
 
-        # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
-        if all(col in df.columns for col in required_columns):
+        # Extract common columns with required_columns
+        common_columns = list(set(required_columns) & set(df.columns))
+
+        if all(col in df.columns for col in common_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Load model if not loaded
@@ -76,12 +76,12 @@ if option == "Upload a CSV file":
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get predictions using the pre-trained model
-                predictions = predict(xgb.DMatrix(df[required_columns]), clf)
+                predictions = predict(xgb.DMatrix(df[common_columns]), clf)
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
         else:
-            st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure and make sure the column names match the required_columns list.")
+            st.warning("The uploaded CSV file does not have the expected common columns for pancreatic cancer detection. Please check the file structure and make sure the necessary columns are present.")
 
 else:
     # Input raw data
