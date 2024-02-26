@@ -10,24 +10,6 @@ venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtu
 
 # Check if xgboost is installed
 
-import streamlit as st
-
-try:
-    import xgboost
-except ImportError:
-    st.error("xgboost not found. Attempting to install xgboost...")
-    st.warning("This may take a minute.")
-
-    # Use the subprocess module to run a shell command to install xgboost
-    import subprocess
-    subprocess.run(["pip", "install", "xgboost"])
-
-    # Check again if xgboost is now available
-    try:
-        import xgboost
-        st.success("xgboost has been successfully installed.")
-    except ImportError:
-        st.error("Failed to install xgboost. Please install it manually.")
 
     # Try installing xgboost using the virtual environment Python executable
     try:
