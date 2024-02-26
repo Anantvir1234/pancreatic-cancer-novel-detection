@@ -36,11 +36,11 @@ if option == "Upload a CSV file":
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-                # Get probabilities of positive class using the pre-trained model
+               # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[required_columns])
+                threshold = 0.5  # Set the threshold for detection to 50%
 
                 # Convert probabilities to binary predictions using the threshold
-                threshold = 0.8
                 predictions = (predictions_proba > threshold).astype(int)
 
                 st.subheader("Final Results:")
@@ -71,9 +71,9 @@ else:
 
         # Get probabilities of positive class using the pre-trained model
         predictions_proba = predict(input_df[required_columns])
+        threshold = 0.5  # Set the threshold for detection to 50%
 
         # Convert probabilities to binary predictions using the threshold
-        threshold = 0.8
         predictions = (predictions_proba > threshold).astype(int)
 
         st.subheader("Final Results:")
