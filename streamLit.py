@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+# Import xgboost and handle the absence of the module
+try:
+    import xgboost
+except ImportError:
+    st.error("Please install the 'xgboost' library to run this application.")
+    st.stop()
+
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -75,4 +82,3 @@ else:
         predictions = predict(input_df[required_columns])
         display_results(predictions)
         st.write("Debug: Model Predictions:", predictions)
-
