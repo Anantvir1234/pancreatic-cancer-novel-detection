@@ -38,7 +38,7 @@ if active_tab == "Upload a .CSV":
                 if st.button("Process Uploaded File", disabled=True):
                     pass
             else:
-            if st.button("Process Uploaded File"):
+                if st.button("Process Uploaded File"):
                     pass
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
