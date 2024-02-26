@@ -9,6 +9,9 @@ import os
 venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtual environment
 
 # Check if xgboost is installed
+import xgboost as xgb
+print(xgb.__version__)
+
 try:
     import xgboost
 except ImportError:
