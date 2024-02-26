@@ -6,14 +6,19 @@ import xgboost as xgb
 # Define clf at the beginning of the script
 clf = None
 
-# Define required_columns
-required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
-
 # Custom session state class
 class SessionState:
     def __init__(self, **kwargs):
-        for key, val in kwargs.items():
-            setattr(self, key, val)
+        self._state = kwargs
+
+    def __getattr__(self, attr):
+        return self._state.get(attr, None)
+
+    def __setattr__(self, attr, value):
+        self._state[attr] = value
+
+# Create a custom session state
+state = SessionState(model_trained=False)
 
 # Function to train the model
 def train_model():
@@ -59,14 +64,10 @@ st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through an uploaded CSV file or input raw data.")
 
-# Create a custom session state
-if 'model_trained' not in st.session_state:
-    st.session_state.model_trained = False
-
 # Run training function only when the app is loaded for the first time
-if not st.session_state.model_trained:
+if not state.model_trained:
     train_model()
-    st.session_state.model_trained = True
+    state.model_trained = True
 
 # Load the model outside the Streamlit app to avoid retraining on every run
 model = load_model()
