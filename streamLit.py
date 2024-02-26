@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 import subprocess
 import sys
+import os
 
 # Check if xgboost is installed
 try:
@@ -12,6 +13,8 @@ except ImportError:
 
     # Try installing xgboost
     try:
+        bin_dir = os.path.dirname(sys.executable)
+        os.environ['PATH'] = f"{bin_dir}:{os.environ['PATH']}"
         subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
         import xgboost  # Check the import again after installation
         st.success("xgboost has been successfully installed!")
