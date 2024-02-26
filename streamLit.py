@@ -4,7 +4,9 @@ import pickle
 
 # Function to get or create a unique session state
 def get_session_state():
-    return st.session_state
+    if not hasattr(st, '_custom_session_state'):
+        st._custom_session_state = st.session_state
+    return st._custom_session_state
 
 def predict(data, model_path="model_xgb.sav"):
     try:
