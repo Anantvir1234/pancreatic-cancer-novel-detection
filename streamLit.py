@@ -24,9 +24,7 @@ if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
     st.subheader("Preview of the uploaded data:")
-    st.write(df.head().values.tolist())
-
-
+    st.dataframe(df.head())
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
