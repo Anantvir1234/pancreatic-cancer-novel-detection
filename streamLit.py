@@ -26,7 +26,7 @@ def load_model(model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-            return clf
+        return clf
     except Exception as e:
         return f"Error loading model: {e}"
 
