@@ -2,12 +2,20 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# Import xgboost and handle the absence of the module
 try:
     import xgboost
-except ImportError:
-    st.error("Please install the 'xgboost' library to run this application.")
-    st.stop()
+except ImportError as e:
+    st.error(f"Error: {e}. Attempting to install the 'xgboost' library...")
+    try:
+        # Attempt to install xgboost
+        st.warning("Trying to install xgboost. Please wait...")
+        import subprocess
+        subprocess.run(["pip", "install", "xgboost"])
+        import xgboost  # Check the import again after installation
+        st.success("'xgboost' has been successfully installed!")
+    except Exception as install_error:
+        st.error(f"Failed to install xgboost. Please install it manually with 'pip install xgboost' and then run the application. Error: {install_error}")
+        st.stop()
 
 def predict(data, model_path="model_xgb.sav"):
     try:
