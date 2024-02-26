@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -23,14 +22,8 @@ uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
-    # Convert boolean columns to bool type
-    bool_columns = df.select_dtypes(include='bool').columns
-    df[bool_columns] = df[bool_columns].astype(bool)
-
-    # Display the first few rows of the DataFrame
     st.subheader("Preview of the uploaded data:")
     st.dataframe(df.head())
-
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
@@ -42,6 +35,11 @@ if uploaded_file is not None:
             # Get predictions using the pre-trained model
             predictions = predict(df[required_columns])
             st.subheader("Final Results:")
-            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+            cancer_detected = any(predictions)
+
+            # Display checkboxes based on the result
+            st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
+            st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
     else:
         st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
+
