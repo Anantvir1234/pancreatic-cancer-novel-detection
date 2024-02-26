@@ -1,4 +1,3 @@
-import streamlit as st
 import pandas as pd
 import joblib
 import sys
@@ -8,13 +7,31 @@ import subprocess
 try:
     import lightgbm
 except ImportError:
-    st.warning("Installing LightGBM...")
     subprocess.run([sys.executable, "-m", "pip", "install", "lightgbm"])
-    st.success("LightGBM installed successfully!")
+
+# Forcefully upgrade pip
+subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
+
+# Now import Streamlit after pip has been upgraded
+import streamlit as st
 
 # Set page configuration
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
+
+# Define clf at the beginning of the script
+clf = None
+
+def load_model(model_path="best_model_lgbm.sav"):
+    global clf  # Declare clf as a global variable
+    try:
+        clf = joblib.load(model_path)
+        return clf
+    except Exception as e:
+        return f"Error loading model: {e}"
+
+# Rest of your code...
+
 
 
 
