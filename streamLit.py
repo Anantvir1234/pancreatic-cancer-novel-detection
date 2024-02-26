@@ -5,31 +5,17 @@ import subprocess
 import sys
 import os
 
-# Check if xgboost is installed
-try:
-    import xgboost
-except ImportError:
-    st.error("xgboost not found. Attempting to install xgboost...")
+# Activate the virtual environment
+activate_path = os.path.join(venv_dir, "bin", "activate")
+activate_cmd = f"source {activate_path}" if os.name == "posix" else f"{activate_path}"
+activate_cmd = f"{activate_cmd} &&" if os.name == "posix" else f"{activate_cmd} &"
+subprocess.run(activate_cmd, shell=True, check=True)
 
-    # Try installing xgboost within the virtual environment
-    try:
-        bin_dir = os.path.dirname(sys.executable)
-        venv_dir = os.path.dirname(bin_dir)
-        
-        # Activate the virtual environment
-        activate_path = os.path.join(venv_dir, "bin", "activate")
-        activate_cmd = f"source {activate_path}" if os.name == "posix" else f"{activate_path}"
-        subprocess.run(activate_cmd, shell=True, check=True)
+# Install xgboost
+subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
 
-        # Install xgboost
-        subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
-
-        # Check the import again after installation
-        import xgboost
-        st.success("xgboost has been successfully installed within the virtual environment!")
-    except Exception as install_error:
-        st.error(f"Failed to install xgboost within the virtual environment. Please install it manually with '{sys.executable} -m pip install xgboost' and then run the application. Error: {install_error}")
-        st.stop()
+# Check the import again after installation
+import xgboost
 
 def predict(data, model_path="model_xgb.sav"):
     try:
