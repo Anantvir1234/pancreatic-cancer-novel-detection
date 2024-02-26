@@ -41,7 +41,7 @@ except ImportError:
         st.stop()
 
 # Run training function only when the app is loaded for the first time
-if not st.session_state.get('model_trained', False):
+if 'model_trained' not in st.session_state:
     train_model()
     st.session_state.model_trained = True
 
@@ -116,4 +116,3 @@ else:
 
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
