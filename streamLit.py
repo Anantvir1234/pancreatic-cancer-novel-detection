@@ -30,7 +30,7 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
@@ -49,9 +49,15 @@ else:
 
     # Input numerical values for each column and biomarker
     features_input = {}
-    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+
     for column in required_columns:
-        features_input[column] = st.number_input(f'{column}: ', min_value=0)
+        if column == "age":
+            features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
+        elif column == "gender":
+            features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
+        else:
+            features_input[column] = st.number_input(f'{column}: ', min_value=0)
 
     # Button for processing the inputted raw data
     if st.button("Process Raw Data", key="process_raw_data"):
@@ -62,4 +68,3 @@ else:
         predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
