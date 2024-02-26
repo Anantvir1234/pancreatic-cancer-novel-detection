@@ -11,6 +11,13 @@ def predict(data, model_path="model_xgb.sav"):
     except Exception as e:
         return f"Error: {e}"
 
+def display_results(predictions):
+    st.subheader("Final Results:")
+    if any(predictions):
+        st.write("Pancreatic Cancer Detected")
+    else:
+        st.write("Not Detected")
+
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
@@ -30,19 +37,16 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get predictions using the pre-trained model
-                predictions_proba = predict(df[required_columns])
-                threshold = 0.5  # You can adjust this threshold based on your model and requirements
-                # Convert probabilities to binary predictions using the threshold
-                predictions = (predictions_proba > threshold).astype(int)
-                st.subheader("Final Results:")
-                st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+                predictions = predict(df[required_columns])
+                display_results(predictions)
+                st.write("Debug: Model Predictions:", predictions)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -69,5 +73,6 @@ else:
 
         # Get predictions using the pre-trained model
         predictions = predict(input_df[required_columns])
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+        display_results(predictions)
+        st.write("Debug: Model Predictions:", predictions)
+
