@@ -83,3 +83,4 @@ else:
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, key='not_detected_checkbox', disabled=True)
         st.write(input_df)
 
+
