@@ -3,7 +3,6 @@ import pandas as pd
 import pickle
 import subprocess
 import os
-import xgboost as xgb
 
 # Define the path to your virtual environment
 venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtual environment
@@ -18,7 +17,7 @@ except ImportError:
     try:
         venv_python = os.path.join(venv_dir, "bin", "python") if os.name == "posix" else os.path.join(venv_dir, "Scripts", "python.exe")
         subprocess.run([venv_python, "-m", "pip", "install", "xgboost"])
-        
+
         # Check the import again after installation
         import xgboost
         st.success("xgboost has been successfully installed within the virtual environment!")
@@ -99,3 +98,4 @@ else:
         predictions = predict(input_df[required_columns])
         display_results(predictions)
         st.write("Debug: Model Predictions:", predictions)
+
