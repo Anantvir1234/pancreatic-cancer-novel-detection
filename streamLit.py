@@ -1,3 +1,5 @@
+%%writefile pancreatic_cancer_detection.py
+
 import streamlit as st
 import pandas as pd
 import pickle
@@ -84,9 +86,10 @@ if option == "Upload a CSV file":
                 # Convert the elements to float and fill NaN values with 0
                 predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
 
-                # Display model information
+                # Display model information without the 'device' attribute
                 st.subheader("Loaded Model Information:")
-                st.write(clf)  # Display model information
+                model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
+                st.write(model_info)
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
