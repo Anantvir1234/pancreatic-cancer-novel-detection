@@ -1,53 +1,15 @@
 import streamlit as st
 import pandas as pd
-import xgboost as xgb
-import subprocess
-import sys
+import pickle
 
-def train_model():
-    # Replace these placeholders with your actual training data and labels
-    train_data = pd.DataFrame({
-        "REG1A": [1911.565138],
-        "creatinine": [1.31196],
-        "TFF1": [369.344],
-        "LYVE1": [5.917939],
-        "plasma_CA19_9": [1916],
-        "REG1B": [381.221725],
-        "age": [73],
-        "gender": [0]  # Assuming M=0, F=1 for gender
-    })
-    labels = pd.Series([3])  # Assuming the diagnosis label is 3 based on the provided dataset
-
-    clf = xgb.XGBClassifier()
-    clf.fit(train_data, labels)
-
-    # Save the model
-    clf.save_model("model_xgb.json")
-
-# Check if xgboost is installed, if not, attempt to install
-try:
-    import xgboost
-except ImportError:
-    st.error("xgboost not found. Attempting to install xgboost...")
-
-    # Install xgboost
+def predict(data, model_path="model_xgb.sav"):
     try:
-        st.warning("Installing xgboost. This may take a few moments...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "xgboost"])
-        import xgboost  # Check the import again after installation
-        st.success("xgboost has been successfully installed!")
-    except Exception as install_error:
-        st.error(f"Failed to install xgboost. Please install it manually with 'pip install xgboost' and then run the application. Error: {install_error}")
-        st.stop()
-
-# Run training function only when the app is loaded for the first time
-if 'model_trained' not in st.session_state:
-    train_model()
-    st.session_state.model_trained = True
-
-# Load the model outside the Streamlit app to avoid retraining on every run
-model = xgb.XGBClassifier()
-model.load_model("model_xgb.json")
+        with open(model_path, 'rb') as model_file:
+            clf = pickle.load(model_file)
+        predictions = clf.predict(data)
+        return predictions
+    except Exception as e:
+        return f"Error: {e}"
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -68,21 +30,29 @@ if option == "Upload a CSV file":
         st.write(df.head().values.tolist())
 
         # Check for specific column names relevant to pancreatic cancer detection
-        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+        required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-                # Get probabilities of positive class using the pre-trained model
-                predictions_proba = model.predict_proba(df[required_columns])[:, 1]
-                threshold = 0.5  # Set the threshold for detection to 50%
+               # Get probabilities of positive class using the pre-trained model
+                predictions_proba = predict(df[required_columns])
+                threshold = 0.3  # You can adjust this threshold based on your model and requirements
+
+                # Convert numpy array to Pandas Series
+                predictions_proba_series = pd.Series(predictions_proba)
+
+                # Convert the elements to float and fill NaN values with 0
+                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
 
                 # Convert probabilities to binary predictions using the threshold
-                predictions = (predictions_proba > threshold).astype(int)
+                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
 
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
+
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -107,12 +77,7 @@ else:
         # Create a DataFrame with the input data
         input_df = pd.DataFrame(features_input, index=[0])
 
-        # Get probabilities of positive class using the pre-trained model
-        predictions_proba = model.predict_proba(input_df[required_columns])[:, 1]
-        threshold = 0.5  # Set the threshold for detection to 50%
-
-        # Convert probabilities to binary predictions using the threshold
-        predictions = (predictions_proba > threshold).astype(int)
-
+        # Get predictions using the pre-trained model
+        predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
