@@ -49,7 +49,8 @@ else:
 
     # Input numerical values for each column and biomarker
     features_input = {}
-    for column in ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]:
+    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
+    for column in required_columns:
         features_input[column] = st.number_input(f'{column}: ', min_value=0)
 
     # Button for processing the inputted raw data
@@ -61,3 +62,4 @@ else:
         predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+
