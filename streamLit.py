@@ -35,7 +35,7 @@ if option == "Upload a CSV file":
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Button for processing the uploaded file
-            if st.button("Process Uploaded File"):
+            if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get predictions using the pre-trained model
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
@@ -46,21 +46,18 @@ if option == "Upload a CSV file":
 else:
     # Input raw data
     st.subheader("Please Input Features Value")
-    age = st.number_input('Age of persons: ', min_value=1)
-    sex = st.number_input('Gender of persons (0=Female, 1=Male): ', min_value=0, max_value=1, format="%d")
 
-    if age < 1:
-        st.error("Age should be greater than or equal to 1.")
-    elif sex not in [0, 1]:
-        st.error("Gender should be either 0 or 1.")
-    else:
+    # Input numerical values for each column and biomarker
+    features_input = {}
+    for column in ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]:
+        features_input[column] = st.number_input(f'{column}: ', min_value=0)
+
+    # Button for processing the inputted raw data
+    if st.button("Process Raw Data", key="process_raw_data"):
         # Create a DataFrame with the input data
-        raw_data = {'age': age, 'sex': sex}
-        input_df = pd.DataFrame(raw_data, index=[0])
+        input_df = pd.DataFrame(features_input, index=[0])
 
-        # Button for processing the inputted raw data
-        if st.button("Process Raw Data"):
-            # Get predictions using the pre-trained model
-            predictions = predict(input_df)
-            st.subheader("Final Results:")
-            st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+        # Get predictions using the pre-trained model
+        predictions = predict(input_df[required_columns])
+        st.subheader("Final Results:")
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
