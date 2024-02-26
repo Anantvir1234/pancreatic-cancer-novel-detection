@@ -78,4 +78,3 @@ else:
 
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
