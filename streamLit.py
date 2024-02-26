@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+title = "Pancreatic Cancer Detection"
+st.set_page_config(page_title=title)
+
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
