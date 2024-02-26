@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import joblib
 
 # Define clf at the beginning of the script
 clf = None
@@ -8,8 +9,7 @@ clf = None
 def load_model(model_path="best_model_lgbm.sav"):
     global clf  # Declare clf as a global variable
     try:
-        with open(model_path, 'rb') as model_file:
-            clf = pickle.load(model_file)
+        clf = joblib.load(model_path)
         return clf
     except Exception as e:
         return f"Error loading model: {e}"
