@@ -24,8 +24,8 @@ clf = None
 def load_model(model_path="model_xgb.sav"):
     global clf  # Declare clf as a global variable
     try:
-        with open(model_path, 'rb') as model_file:
-            clf = pickle.load(model_file)
+        # Use xgb.Booster.load_model to load the model
+        clf = xgb.Booster(model_file=model_path)
         return clf
     except Exception as e:
         return f"Error loading model: {e}"
@@ -34,7 +34,7 @@ def load_model(model_path="model_xgb.sav"):
 def predict(data):
     global clf  # Declare clf as a global variable
     try:
-        predictions = clf.predict(data)
+        predictions = clf.predict(xgb.DMatrix(data))
         return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
@@ -112,14 +112,4 @@ else:
         elif column == "gender":
             features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
         else:
-            features_input[column] = st.number_input(f'{column}: ', min_value=0)
-
-    # Button for processing the inputted raw data
-    if st.button("Process Raw Data", key="process_raw_data"):
-        # Create a DataFrame with the input data
-        input_df = pd.DataFrame(features_input, index=[0])
-
-        # Get predictions using the pre-trained model
-        predictions = predict(input_df[required_columns])
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+            features_input[column] = st
