@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import joblib
 
 # Define clf at the beginning of the script
 clf = None
