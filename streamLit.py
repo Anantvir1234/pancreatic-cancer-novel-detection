@@ -24,8 +24,8 @@ clf = None
 def load_model(model_path="model_xgb.sav"):
     global clf  # Declare clf as a global variable
     try:
-        # Use xgb.Booster.load_model to load the model
-        clf = xgb.Booster(model_file=model_path)
+        with open(model_path, 'rb') as model_file:
+            clf = pickle.load(model_file)
         return clf
     except Exception as e:
         return f"Error loading model: {e}"
@@ -34,12 +34,7 @@ def load_model(model_path="model_xgb.sav"):
 def predict(data):
     global clf  # Declare clf as a global variable
     try:
-        # Check if the model is XGBoost
-        if isinstance(clf, xgb.Booster):
-            predictions = clf.predict(xgb.DMatrix(data))
-        else:
-            # For other models, use the default predict method
-            predictions = clf.predict(data)
+        predictions = clf.predict(data)
         return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
@@ -58,7 +53,7 @@ option = st.radio("Select an option:", ["Upload a CSV file", "Input Raw Data"])
 
 if option == "Upload a CSV file":
     # Upload CSV file
-    uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
         # Load CSV data into a DataFrame
         df = pd.read_csv(uploaded_file)
@@ -81,7 +76,7 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[common_columns])
-                threshold = 0.5  # Adjusted threshold
+                threshold = 0.5  # You can adjust this threshold based on your model and requirements
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
@@ -93,10 +88,6 @@ if option == "Upload a CSV file":
                 st.subheader("Loaded Model Information:")
                 model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
                 st.write(model_info)
-
-                # Display probabilities
-                st.subheader("Predicted Probabilities:")
-                st.write(predictions_proba_numeric)
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
@@ -119,5 +110,17 @@ else:
         if column == "age":
             features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
         elif column == "gender":
-            features_input[column] = st.number_input(f'{column} (0 for
+            features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
+        else:
+            features_input[column] = st.number_input(f'{column}: ', min_value=0)
+
+    # Button for processing the inputted raw data
+    if st.button("Process Raw Data", key="process_raw_data"):
+        # Create a DataFrame with the input data
+        input_df = pd.DataFrame(features_input, index=[0])
+
+        # Get predictions using the pre-trained model
+        predictions = predict(input_df[required_columns])
+        st.subheader("Final Results:")
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
