@@ -1,5 +1,3 @@
-%%writefile pancreatic_cancer_detection.py
-
 import streamlit as st
 import pandas as pd
 import pickle
@@ -78,7 +76,7 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[common_columns])
-                threshold = 0.3  # You can adjust this threshold based on your model and requirements
+                threshold = 0.5  # Adjusted threshold
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
@@ -117,5 +115,11 @@ else:
             features_input[column] = st.number_input(f'{column}: ', min_value=0)
 
     # Button for processing the inputted raw data
-    if 
+    if st.button("Process Raw Data", key="process_raw_data"):
+        # Create a DataFrame with the input data
+        input_df = pd.DataFrame(features_input, index=[0])
 
+        # Get predictions using the pre-trained model
+        predictions = predict(input_df[required_columns])
+        st.subheader("Final Results:")
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
