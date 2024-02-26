@@ -5,7 +5,7 @@ import pickle
 # Define clf at the beginning of the script
 clf = None
 
-def load_model(model_path="model_xgb.sav"):
+def load_model(model_path="best_model_lgbm.sav"):
     global clf  # Declare clf as a global variable
     try:
         with open(model_path, 'rb') as model_file:
