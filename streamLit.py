@@ -87,7 +87,8 @@ if option == "Upload a CSV file":
                 # Display model information without the 'device' attribute
                 st.subheader("Loaded Model Information:")
                 model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
-                st.write(model_info)
+                for key, value in model_info.items():
+                    st.write(f"{key}: {value}")
 
                 # Display the XGBoost model
                 st.subheader("XGBoost Model:")
