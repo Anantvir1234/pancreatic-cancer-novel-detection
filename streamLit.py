@@ -49,7 +49,7 @@ if st.button("Upload a .CSV", key=upload_button_key):
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
             # Check if Process Uploaded File button is clicked
-            if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled="error" in ss.__dict__):
+            if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled=getattr(ss, "error", None) is not None):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
