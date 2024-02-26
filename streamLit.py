@@ -40,10 +40,8 @@ if active_tab == "Upload a .CSV":
                 cancer_detected = any(predictions)
                 if not isinstance(cancer_detected, str):
                     st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                    if cancer_detected:
-                        st.checkbox("Not Detected", value=False, key='not_detected_checkbox')
-                else:
-                    st.error(cancer_detected)
+                    st.checkbox("Cancer Detected", value=cancer_detected, key='cancer_detected_checkbox', disabled=True)
+                    st.checkbox("Not Detected", value=not cancer_detected, key='not_detected_checkbox', disabled=True)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
@@ -77,7 +75,9 @@ else:
             predictions = predict(input_df)
             st.subheader("Final Results:")
             cancer_detected = bool(predictions[0])
-         if not isinstance(cancer_detected, str):
+            if not isinstance(cancer_detected, str):
                 st.write("Pancreatic Cancer Detected" if cancer_detected else "Not Detected")
-                st.text("☑️ Cancer Detected" if cancer_detected else "□ Not Detected")
+                st.checkbox("Cancer Detected", value=cancer_detected, key='cancer_detected_checkbox', disabled=True)
+                st.checkbox("Not Detected", value=not cancer_detected, key='not_detected_checkbox', disabled=True)
         st.write(input_df)
+
