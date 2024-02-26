@@ -88,7 +88,7 @@ if st.button("Input raw data", key=raw_data_button_key):
     
     input_df = user_input_features()
     # Check if Process Values button is clicked
-    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled="error" in ss):
+    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled=getattr(ss, "error", None) is not None):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
