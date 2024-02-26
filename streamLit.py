@@ -1,6 +1,12 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import warnings
+
+# Suppress FutureWarnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+# The rest of your Streamlit app code...
 
 def predict(data, model_path="model_xgb.sav"):
     try:
