@@ -76,7 +76,7 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[common_columns])
-                threshold = 0.5  # Adjusted threshold
+                threshold = 0.5  # Adjusted threshold to 0.5
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
@@ -88,6 +88,10 @@ if option == "Upload a CSV file":
                 st.subheader("Loaded Model Information:")
                 model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
                 st.write(model_info)
+
+                # Display the XGBoost model
+                st.subheader("XGBoost Model:")
+                st.write(clf.get_booster().get_dump()[0])  # Display the first tree in the booster
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
@@ -122,4 +126,5 @@ else:
         # Get predictions using the pre-trained model
         predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+        st.write("Pancreatic Cancer Detected" if any(predictions)
+
