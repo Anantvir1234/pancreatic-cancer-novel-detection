@@ -1,17 +1,6 @@
 import streamlit as st
 import pandas as pd
 import pickle
-
-import streamlit as st
-from types import SimpleNamespace
-
-def get_session_state():
-    if not hasattr(st, '_custom_session_state'):
-        st._custom_session_state = SimpleNamespace(**{k: None for k in ["active_tab"]})
-    return st._custom_session_state
-
-ss = get_session_state()
-
 def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
@@ -20,26 +9,20 @@ def predict(data, model_path="model_xgb.sav"):
         return predictions
     except Exception as e:
         return f"Error: {e}"
-
 # Title and description
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
+st.image('image-removebg-preview (17).png')
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-# Initialize session state
-ss = get_session_state()
-
-# Define unique keys for each button
-upload_button_key = "upload_button"
-raw_data_button_key = "raw_data_button"
-
-# Check if upload button is clicked
-if st.button("Upload a .CSV", key=upload_button_key):
+session_state = st.session_state
+if 'active_tab' not in session_state:
+    session_state.active_tab = "Upload a .CSV"
+if session_state.active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
-
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
@@ -48,8 +31,7 @@ if st.button("Upload a .CSV", key=upload_button_key):
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            # Check if Process Uploaded File button is clicked
-            if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled=getattr(ss, "error", None) is not None):
+            if st.button("Process Uploaded File", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -61,9 +43,7 @@ if st.button("Upload a .CSV", key=upload_button_key):
                     st.error(cancer_detected)
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
-
-# Check if raw data button is clicked
-if st.button("Input raw data", key=raw_data_button_key):
+else:
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
@@ -87,8 +67,7 @@ if st.button("Input raw data", key=raw_data_button_key):
         return features
     
     input_df = user_input_features()
-    # Check if Process Values button is clicked
-    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled=getattr(ss, "error", None) is not None):
+    if st.button("Process values", disabled="error" in st.session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -98,3 +77,7 @@ if st.button("Input raw data", key=raw_data_button_key):
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
+if st.button("Upload a .CSV"):
+    session_state.active_tab = "Upload a .CSV"
+if st.button("Input raw data"):
+    session_state.active_tab = "Input Raw Data"
