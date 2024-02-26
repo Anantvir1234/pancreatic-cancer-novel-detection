@@ -37,7 +37,10 @@ if option == "Upload a CSV file":
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get predictions using the pre-trained model
-                predictions = predict(df[required_columns])
+                predictions_proba = predict(df[required_columns])
+                threshold = 0.5  # You can adjust this threshold based on your model and requirements
+                # Convert probabilities to binary predictions using the threshold
+                predictions = (predictions_proba > threshold).astype(int)
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
         else:
