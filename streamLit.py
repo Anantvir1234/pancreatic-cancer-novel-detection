@@ -18,10 +18,9 @@ st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
 # Default active tab
-upload_csv_button = st.button("Upload a .CSV", key="upload_csv_button")
-input_raw_data_button = st.button("Input raw data", key="input_raw_data_button")
-
-active_tab = "Upload a .CSV" if upload_csv_button else "Input Raw Data"
+active_tab = st.button("Upload a .CSV", key="upload_button")
+if active_tab:
+    active_tab = "Upload a .CSV"
 
 if active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
@@ -36,7 +35,7 @@ if active_tab == "Upload a .CSV":
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File"):
+            if st.button("Process Uploaded File", key="process_file_button"):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -73,7 +72,7 @@ else:
         return features
     
     input_df = user_input_features()
-    if st.button("Process values"):
+    if st.button("Process values", key="process_values_button"):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -83,3 +82,8 @@ else:
                 st.checkbox("Cancer Detected", value=cancer_detected, disabled=True)
                 st.checkbox("Cancer Not Detected", value=not cancer_detected, disabled=True)
         st.write(input_df)
+
+if st.button("Upload a .CSV", key="upload_button"):
+    active_tab = "Upload a .CSV"
+if st.button("Input raw data", key="input_raw_data_button"):
+    active_tab = "Input Raw Data"
