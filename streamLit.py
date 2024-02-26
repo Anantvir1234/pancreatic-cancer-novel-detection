@@ -25,8 +25,10 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
     # Display the first few rows of the DataFrame
+   # Display the first few rows of the DataFrame
     st.subheader("Preview of the uploaded data:")
-    st.write(df.head())
+    st.write(df.head().to_numpy())
+
 
     # Check for specific column names relevant to pancreatic cancer detection
     required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
