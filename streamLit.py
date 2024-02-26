@@ -126,5 +126,4 @@ else:
         # Get predictions using the pre-trained model
         predictions = predict(input_df[required_columns])
         st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions)
-
+        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
