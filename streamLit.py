@@ -16,6 +16,8 @@ except ImportError:
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 
+
+
 # Define clf at the beginning of the script
 clf = None
 
