@@ -1,6 +1,16 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import sys
+import subprocess
+
+# Install lightgbm if not already installed
+try:
+    import lightgbm
+except ImportError:
+    st.warning("Installing LightGBM...")
+    subprocess.run([sys.executable, "-m", "pip", "install", "lightgbm"])
+    st.success("LightGBM installed successfully!")
 
 # Define clf at the beginning of the script
 clf = None
@@ -74,7 +84,7 @@ if option == "Upload a CSV file":
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-   # Input raw data
+    # Input raw data
     st.subheader("Please Input Features Value")
 
     # Input numerical values for each column and biomarker
@@ -84,7 +94,7 @@ else:
     for column in required_columns:
         if column == "age":
             features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
-        elif column == "gender":
+        elif column == "sex":
             features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
         else:
             features_input[column] = st.number_input(f'{column}: ', min_value=0)
