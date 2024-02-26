@@ -5,15 +5,11 @@ import subprocess
 import sys
 import os
 
-# Activate the virtual environment
-venv_dir = "/home/adminuser/venv"  # Replace with the correct path to your virtual environment
-
-# Construct the path to the activate script based on the OS
-activate_script = "activate" if os.name == "nt" else "activate"
-activate_path = os.path.join(venv_dir, "bin", activate_script) if os.name == "posix" else os.path.join(venv_dir, "Scripts", activate_script)
+# Construct the path to the virtual environment Python executable
+venv_python = os.path.join(venv_dir, "bin", "python") if os.name == "posix" else os.path.join(venv_dir, "Scripts", "python.exe")
 
 # Install xgboost
-subprocess.run([activate_path, sys.executable, "-m", "pip", "install", "xgboost"])
+subprocess.run([venv_python, "-m", "pip", "install", "xgboost"])
 
 # Check the import again after installation
 import xgboost
