@@ -2,11 +2,14 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# Function to get or create a unique session state
+import streamlit as st
+
 def get_session_state():
     if not hasattr(st, '_custom_session_state'):
-        st._custom_session_state = st.session_state
+        st._custom_session_state = SimpleNamespace(**{k: None for k in ["active_tab"]})
     return st._custom_session_state
+
+ss = get_session_state()
 
 def predict(data, model_path="model_xgb.sav"):
     try:
