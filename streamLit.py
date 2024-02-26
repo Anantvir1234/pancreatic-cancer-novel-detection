@@ -84,10 +84,11 @@ if option == "Upload a CSV file":
                 # Convert the elements to float and fill NaN values with 0
                 predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
 
-                # Display model information without the 'device' attribute
+                # Display model information with the 'display' configuration option set to 'diagram'
                 st.subheader("Loaded Model Information:")
-                model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
-                st.write(model_info)
+                with st.echo():
+                    model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
+                    st.write(model_info)
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
@@ -108,18 +109,4 @@ else:
 
     for column in required_columns:
         if column == "age":
-            features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
-        elif column == "gender":
-            features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
-        else:
-            features_input[column] = st.number_input(f'{column}: ', min_value=0)
-
-    # Button for processing the inputted raw data
-    if st.button("Process Raw Data", key="process_raw_data"):
-        # Create a DataFrame with the input data
-        input_df = pd.DataFrame(features_input, index=[0])
-
-        # Get predictions using the pre-trained model
-        predictions = predict(input_df[required_columns])
-        st.subheader("Final Results:")
-        st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
+            features_input[column] = st.number_input(f'{column} (greater than or equal
