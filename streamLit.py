@@ -2,14 +2,25 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-def predict(data, model_path="model_xgb.sav"):
+# Define clf at the beginning of the script
+clf = None
+
+def load_model(model_path="model_xgb.sav"):
+    global clf  # Declare clf as a global variable
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
+        return clf
+    except Exception as e:
+        return f"Error loading model: {e}"
+
+def predict(data):
+    global clf  # Declare clf as a global variable
+    try:
         predictions = clf.predict(data)
         return predictions
     except Exception as e:
-        return f"Error: {e}"
+        return f"Error making predictions: {e}"
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -34,9 +45,13 @@ if option == "Upload a CSV file":
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
+            # Load model if not loaded
+            if clf is None:
+                clf = load_model()
+
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
-               # Get probabilities of positive class using the pre-trained model
+                # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[required_columns])
                 threshold = 0.3  # You can adjust this threshold based on your model and requirements
 
@@ -46,18 +61,21 @@ if option == "Upload a CSV file":
                 # Convert the elements to float and fill NaN values with 0
                 predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
 
+                # Display model information
+                st.subheader("Loaded Model Information:")
+                st.write(clf)  # Display model information
+
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
 
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
 
-
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-    # Input raw data
+   # Input raw data
     st.subheader("Please Input Features Value")
 
     # Input numerical values for each column and biomarker
