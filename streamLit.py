@@ -23,11 +23,9 @@ uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
 if uploaded_file is not None:
     # Load CSV data into a DataFrame
     df = pd.read_csv(uploaded_file)
-
-    # Display the first few rows of the DataFrame
-   # Display the first few rows of the DataFrame
     st.subheader("Preview of the uploaded data:")
-    st.write(df.head().to_numpy())
+    st.write(df.head().values.tolist())
+
 
 
     # Check for specific column names relevant to pancreatic cancer detection
