@@ -34,7 +34,12 @@ def load_model(model_path="model_xgb.sav"):
 def predict(data):
     global clf  # Declare clf as a global variable
     try:
-        predictions = clf.predict(xgb.DMatrix(data))
+        # Check if the model is XGBoost
+        if isinstance(clf, xgb.Booster):
+            predictions = clf.predict(xgb.DMatrix(data))
+        else:
+            # For other models, use the default predict method
+            predictions = clf.predict(data)
         return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
@@ -89,6 +94,10 @@ if option == "Upload a CSV file":
                 model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
                 st.write(model_info)
 
+                # Display probabilities
+                st.subheader("Predicted Probabilities:")
+                st.write(predictions_proba_numeric)
+
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
 
@@ -110,6 +119,5 @@ else:
         if column == "age":
             features_input[column] = st.number_input(f'{column} (greater than or equal to 1): ', min_value=1)
         elif column == "gender":
-            features_input[column] = st.number_input(f'{column} (0 for Male, 1 for Female): ', min_value=0, max_value=1, format="%d")
-        else:
-            features_input[column] = st
+            features_input[column] = st.number_input(f'{column} (0 for
+
