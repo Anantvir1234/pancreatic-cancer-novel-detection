@@ -17,23 +17,12 @@ st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-# Initialize session_state if not already done
-if 'active_tab' not in st.session_state:
-    st.session_state.active_tab = "Upload a .CSV"
+# Default active tab
+active_tab = st.button("Upload a .CSV")
+if active_tab:
+    active_tab = "Upload a .CSV"
 
-# Rest of your Streamlit app code...
-
-if st.button("Upload a .CSV"):
-    st.session_state.active_tab = "Upload a .CSV"
-
-if st.button("Input raw data"):
-    st.session_state.active_tab = "Input Raw Data"
-
-session_state = st.session_state
-if 'active_tab' not in session_state:
-    session_state.active_tab = "Upload a .CSV"
-
-if session_state.active_tab == "Upload a .CSV":
+if active_tab == "Upload a .CSV":
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
@@ -46,7 +35,7 @@ if session_state.active_tab == "Upload a .CSV":
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File", disabled="error" in st.session_state):
+            if st.button("Process Uploaded File"):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -83,7 +72,7 @@ else:
         return features
     
     input_df = user_input_features()
-    if st.button("Process values", disabled="error" in st.session_state):
+    if st.button("Process values"):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
@@ -95,6 +84,6 @@ else:
         st.write(input_df)
 
 if st.button("Upload a .CSV"):
-    session_state.active_tab = "Upload a .CSV"
+    active_tab = "Upload a .CSV"
 if st.button("Input raw data"):
-    session_state.active_tab = "Input Raw Data"
+    active_tab = "Input Raw Data"
