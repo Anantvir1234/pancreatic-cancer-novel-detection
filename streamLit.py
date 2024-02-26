@@ -36,11 +36,20 @@ if option == "Upload a CSV file":
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
+               # Get probabilities of positive class using the pre-trained model
+               # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[required_columns])
-                predictions_proba_numeric = pd.to_numeric(predictions_proba, errors='coerce')
-                predictions_proba_numeric.fillna(0, inplace=True)
-                threshold = 0.5
-                predictions = (predictions_proba_numeric > threshold).astype(int)
+                threshold = 0.5  # You can adjust this threshold based on your model and requirements
+
+                # Convert numpy array to Pandas Series
+                predictions_proba_series = pd.Series(predictions_proba)
+
+                # Convert the elements to float and fill NaN values with 0
+                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
+
+                # Convert probabilities to binary predictions using the threshold
+                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
+
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
         else:
