@@ -12,7 +12,7 @@ def predict(data, model_path="model_xgb.sav"):
         return f"Error: {e}"
 
 # Title and description
-st.image('image-removebg-preview (15).png')
+st.image('image-removebg-preview (17).png')
 title = "Pancreatic Cancer Detection"
 st.set_page_config(page_title=title)
 st.header(title)
