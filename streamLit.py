@@ -6,8 +6,8 @@ def predict(data, model_path="model_xgb.sav"):
     try:
         with open(model_path, 'rb') as model_file:
             clf = pickle.load(model_file)
-        predictions = clf.predict(data)
-        return predictions
+        predictions_proba = clf.predict_proba(data)[:, 1]  # Probabilities of positive class
+        return predictions_proba
     except Exception as e:
         return f"Error: {e}"
 
@@ -38,16 +38,10 @@ if option == "Upload a CSV file":
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                # Get probabilities of positive class using the pre-trained model
                 predictions_proba = predict(df[required_columns])
-                threshold = 0.3  # You can adjust this threshold based on your model and requirements
-
-                # Convert numpy array to Pandas Series
-                predictions_proba_series = pd.Series(predictions_proba)
-
-                # Convert the elements to float and fill NaN values with 0
-                predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
+                threshold = 0.5  # Set the threshold for detection to 50%
 
                 # Convert probabilities to binary predictions using the threshold
-                predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
+                predictions = (predictions_proba > threshold).astype(int)
 
                 st.subheader("Final Results:")
                 st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
@@ -75,7 +69,12 @@ else:
         # Create a DataFrame with the input data
         input_df = pd.DataFrame(features_input, index=[0])
 
-        # Get predictions using the pre-trained model
-        predictions = predict(input_df[required_columns])
+        # Get probabilities of positive class using the pre-trained model
+        predictions_proba = predict(input_df[required_columns])
+        threshold = 0.5  # Set the threshold for detection to 50%
+
+        # Convert probabilities to binary predictions using the threshold
+        predictions = (predictions_proba > threshold).astype(int)
+
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
