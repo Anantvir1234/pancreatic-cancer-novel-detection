@@ -17,7 +17,12 @@ st.set_page_config(page_title=title)
 st.header(title)
 st.markdown("Detect pancreatic cancer through a CSV file or input raw data")
 
-if st.button("Upload a .CSV", key="upload_button"):
+# Define unique keys for each button
+upload_button_key = "upload_button"
+raw_data_button_key = "raw_data_button"
+
+# Check if upload button is clicked
+if st.button("Upload a .CSV", key=upload_button_key):
     # On the "Upload a .CSV" tab
     st.sidebar.header('Upload a CSV file')
     st.sidebar.markdown("Please upload a CSV file for detection.")
@@ -30,7 +35,8 @@ if st.button("Upload a .CSV", key="upload_button"):
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age"]
         if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
-            if st.button("Process Uploaded File", disabled="error" in st.session_state):
+            # Check if Process Uploaded File button is clicked
+            if st.button("Process Uploaded File", key=f"process_uploaded_file_{upload_button_key}", disabled="error" in st.session_state):
                 predictions = predict(df[required_columns])
                 st.subheader("Final Results:")
                 cancer_detected = any(predictions)
@@ -43,7 +49,8 @@ if st.button("Upload a .CSV", key="upload_button"):
         else:
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
-if st.button("Input raw data", key="raw_data_button"):
+# Check if raw data button is clicked
+if st.button("Input raw data", key=raw_data_button_key):
     st.sidebar.header('Please Input Features Value')
     
     def user_input_features():
@@ -67,7 +74,8 @@ if st.button("Input raw data", key="raw_data_button"):
         return features
     
     input_df = user_input_features()
-    if st.button("Process values", disabled="error" in st.session_state):
+    # Check if Process Values button is clicked
+    if st.button("Process values", key=f"process_values_{raw_data_button_key}", disabled="error" in st.session_state):
         if input_df is not None:
             predictions = predict(input_df)
             st.subheader("Final Results:")
