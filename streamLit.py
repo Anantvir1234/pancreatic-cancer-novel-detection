@@ -1,51 +1,26 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import xgboost as xgb
-
-# Custom session state class
-class SessionState:
-    def __init__(self, **kwargs):
-        self._state = kwargs
-
-    def __getattr__(self, attr):
-        return self._state.get(attr, None)
-
-    def __setattr__(self, attr, value):
-        if "_state" in self.__dict__:
-            self._state[attr] = value
-        else:
-            super().__setattr__(attr, value)
 
 # Define clf at the beginning of the script
 clf = None
 
-# Function to load the XGBoost model
 def load_model(model_path="model_xgb.sav"):
     global clf  # Declare clf as a global variable
     try:
-        # Use xgb.Booster.load_model to load the model
-        clf = xgb.Booster(model_file=model_path)
+        with open(model_path, 'rb') as model_file:
+            clf = pickle.load(model_file)
         return clf
     except Exception as e:
         return f"Error loading model: {e}"
 
-# Function to make predictions
 def predict(data):
     global clf  # Declare clf as a global variable
     try:
-        # Check if the model is XGBoost
-        if isinstance(clf, xgb.Booster):
-            predictions = clf.predict(xgb.DMatrix(data))
-        else:
-            # For other models, use the default predict method
-            predictions = clf.predict(data)
+        predictions = clf.predict(data)
         return predictions
     except Exception as e:
         return f"Error making predictions: {e}"
-
-# Create a custom session state
-state = SessionState(model_trained=False)
 
 # Title and description
 title = "Pancreatic Cancer Detection"
@@ -58,7 +33,7 @@ option = st.radio("Select an option:", ["Upload a CSV file", "Input Raw Data"])
 
 if option == "Upload a CSV file":
     # Upload CSV file
-    uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+    uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"])
     if uploaded_file is not None:
         # Load CSV data into a DataFrame
         df = pd.read_csv(uploaded_file)
@@ -67,21 +42,18 @@ if option == "Upload a CSV file":
 
         # Check for specific column names relevant to pancreatic cancer detection
         required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
-        common_columns = list(set(required_columns) & set(df.columns))
-
-        if all(col in common_columns for col in required_columns):
+        if all(col in df.columns for col in required_columns):
             st.subheader("Pancreatic Cancer Detection Results:")
 
             # Load model if not loaded
-            if clf is None or not state.model_trained:
+            if clf is None:
                 clf = load_model()
-                state.model_trained = True
 
             # Button for processing the uploaded file
             if st.button("Process Uploaded File", key="process_uploaded_file"):
                 # Get probabilities of positive class using the pre-trained model
-                predictions_proba = predict(df[common_columns])
-                threshold = 0.5  # Adjusted threshold
+                predictions_proba = predict(df[required_columns])
+                threshold = 0.3  # You can adjust this threshold based on your model and requirements
 
                 # Convert numpy array to Pandas Series
                 predictions_proba_series = pd.Series(predictions_proba)
@@ -89,14 +61,9 @@ if option == "Upload a CSV file":
                 # Convert the elements to float and fill NaN values with 0
                 predictions_proba_numeric = pd.to_numeric(predictions_proba_series, errors='coerce').fillna(0)
 
-                # Display model information without the 'device' attribute
+                # Display model information
                 st.subheader("Loaded Model Information:")
-                model_info = {key: getattr(clf, key) for key in dir(clf) if not callable(getattr(clf, key)) and not key.startswith("__") and key != 'device'}
-                st.write(model_info)
-
-                # Display probabilities
-                st.subheader("Predicted Probabilities:")
-                st.write(predictions_proba_numeric)
+                st.write(clf)  # Display model information
 
                 # Convert probabilities to binary predictions using the threshold
                 predictions = (predictions_proba_numeric.astype(float) > threshold).astype(int)
@@ -108,12 +75,12 @@ if option == "Upload a CSV file":
             st.warning("The uploaded CSV file does not have the expected column names for pancreatic cancer detection. Please check the file structure")
 
 else:
-    # Input Raw Data
+   # Input raw data
     st.subheader("Please Input Features Value")
 
     # Input numerical values for each column and biomarker
     features_input = {}
-    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "gender"]
+    required_columns = ["REG1A", "creatinine", "TFF1", "LYVE1", "plasma_CA19_9", "REG1B", "age", "sex"]
 
     for column in required_columns:
         if column == "age":
@@ -130,7 +97,5 @@ else:
 
         # Get predictions using the pre-trained model
         predictions = predict(input_df[required_columns])
-
         st.subheader("Final Results:")
         st.write("Pancreatic Cancer Detected" if any(predictions) else "Not Detected")
-
